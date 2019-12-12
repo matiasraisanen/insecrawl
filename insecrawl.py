@@ -4,7 +4,7 @@ from urllib.request import urlopen, Request
 import cv2
 import re
 import urllib
-
+from iso3166 import countries
 
 def GetMaxPageNum(country):
     """
@@ -55,7 +55,7 @@ def ScrapeImages(country, pageNum):
             vidObj = cv2.VideoCapture(image_url)
             success, image = vidObj.read()
             if success:
-                cv2.imwrite('{}.jpg'.format(image_id), image)
+                cv2.imwrite('./images/{}.jpg'.format(image_id), image)
             print('DONE processing {}'.format(image_id))
             print('*****')
     except urllib.error.HTTPError:
@@ -66,7 +66,9 @@ if __name__ == '__main__':
 
     country = input("Provide two letter country code: ")
     maxPages = GetMaxPageNum(country)
-    print('{} has {} pages of cameras.'.format(country, maxPages))
+    countryDetails = countries.get(country)
+    countryName = countryDetails.name
+    print('{} has {} pages of cameras.'.format(countryName, maxPages))
     userInput = input(
         "Provide the number of pages to scrape, or simply letter 'a' for all: ")
 
