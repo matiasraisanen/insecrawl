@@ -1,5 +1,5 @@
 # Images folder, where IP camera images are saved.
-images/*
+images/*.jpg
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
