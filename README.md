@@ -36,6 +36,7 @@ Possible arguments:
 
 ```
 .
+├── help.txt            # Manual page / help text
 ├── images              # Downloaded images go here. Contents ignored by github.
 │   └── .gitignore
 ├── insecrawl.py        # Main program
