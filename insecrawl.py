@@ -181,8 +181,6 @@ class Insecrawl:
 
         self.logger.debug('Country code {} resolved to {}.'.format(
             self.country, self.countryName))
-        self.logger.info(
-            'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
         self.ScrapePages()
 
 
