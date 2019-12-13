@@ -19,7 +19,7 @@ class Insecrawl:
                             datefmt='%H:%M:%S', level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
-        self.printPages = False
+        self.printAmount = False
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
@@ -183,7 +183,7 @@ class Insecrawl:
             self.country, self.countryName))
         self.logger.info(
             'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
-        # self.ScrapePages()
+        self.ScrapePages()
 
 
 if __name__ == '__main__':
