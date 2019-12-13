@@ -16,8 +16,7 @@ The program is interactive, and will guide you forward.
 
 ```
 .
-├── images              # Downloaded images go here
-│   └── README.md
+├── images              # Downloaded images go here. Contents ignored by github
 ├── insecrawl.py        # Main program
 ├── LICENSE
 ├── README.md           # This file
