@@ -21,7 +21,6 @@ The program is interactive, and will guide you forward.
 ├── insecrawl.py        # Main program
 ├── LICENSE
 ├── README.md           # This file
-└── rip.py              # Testing file
 ```
 
 ## Dependencies
