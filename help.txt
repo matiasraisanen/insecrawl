@@ -1,7 +1,8 @@
 
 ╔══════════════════════╗
-║       InseCrawl      ║
-╚══════════════════════╝ v0.1
+║       InseCrawl      ║ v0.1
+╚══════════════════════╝ By: Matias Raisanen 2019 || http://matiasraisanen.com
+
 Insecam crawler. Downloads a still frame of live feeds on insecam.org
 
 ARGUMENTS
