@@ -61,19 +61,13 @@ class Insecrawl:
         """
             Prints a manual page.
         """
-        print("╔══════════════════════╗")
-        print("║       InseCrawl      ║")
-        print("╚══════════════════════╝ v0.1")
-        print("Insecam crawler. Downloads a still frame of live feeds on insecam.org")
-        print("\n")
-        print("ARGUMENTS")
-        print("═════════")
-        print(
-            "-c, --country        Desired country as a two letter code (ISO 3166-1 alpha-2)")
-        print("-v, --verbose        Debug level logging")
-        print("-h, --help           Print this help page")
-        print("-P, --pageCount      Prints the amount of camera pages of a given country")
-        print("-p, --pages          Scrape this many pages.")
+        fileHandler = open ("help.txt", "r")
+        while True:
+            line = fileHandler.readline()
+            if not line:
+                break
+            print(line.strip())
+        fileHandler.close()
         sys.exit()
 
     def raiseCritical(self):
@@ -129,7 +123,8 @@ class Insecrawl:
                     self.logger.debug('DONE processing {}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                vidObj = cv2.VideoCapture(image_url) # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
+                # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
+                vidObj = cv2.VideoCapture(image_url)
                 success, image = vidObj.read()
                 if success:
                     cv2.imwrite('./images/{}.jpg'.format(image_id), image)

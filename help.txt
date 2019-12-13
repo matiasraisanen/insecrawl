@@ -1,0 +1,15 @@
+
+╔══════════════════════╗
+║       InseCrawl      ║
+╚══════════════════════╝ v0.1
+Insecam crawler. Downloads a still frame of live feeds on insecam.org
+
+ARGUMENTS
+═════════
+
+-c, --country        Desired country as a two letter code (ISO 3166-1 alpha-2)
+-v, --verbose        Debug level logging
+-h, --help           Print this help page
+-P, --pageCount      Prints the amount of camera pages of a given country
+-p, --pages          Scrape this many pages.
+
