@@ -23,8 +23,8 @@ class Insecrawl:
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "vhc:P"
-        gnuOptions = ["verbose", "help", "country=", "pageCount"]
+        unixOptions = "vhc:PC"
+        gnuOptions = ["verbose", "help", "country=", "countCameras"]
 
         try:
             arguments, values = getopt.getopt(
@@ -41,8 +41,8 @@ class Insecrawl:
                 self.printHelp()
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
-            elif currentArgument in ("-P", "--pageCount"):
-                self.printPages = True
+            elif currentArgument in ("-C", "--countCameras"):
+                self.printAmount = True
 
         try:
             self.countryDetails = countries.get(self.country)
@@ -167,16 +167,16 @@ class Insecrawl:
             page += 1
         self.logger.info('DONE scraping all requested pages.')
 
-    def printPageCount(self):
+    def printCameraCount(self):
         """
-        Prints page count, then exits the program.
+        Prints page and camera count, then exits the program.
         """
-        print('{} has {} pages of cameras.'.format(
-            self.countryName, self.maxPages))
+        print('{} has {} cameras accross {} pages.'.format(
+            self.countryName, self.amountOfCameras, self.maxPages))
 
     def main(self):
-        if self.printPages:
-            self.printPageCount()
+        if self.printAmount:
+            self.printCameraCount()
             sys.exit()
 
         self.logger.debug('Country code {} resolved to {}.'.format(
