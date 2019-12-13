@@ -53,6 +53,7 @@ class Insecrawl:
             sys.exit(self.raiseCritical())
 
         self.maxPages = self.GetMaxPageNum()
+        self.amountOfCameras = self.CountCameras()
         self.pages = 1  # Default amount of pages to scrape
         self.path = os.getcwd()
         self.main()
@@ -61,7 +62,7 @@ class Insecrawl:
         """
             Prints a manual page.
         """
-        fileHandler = open ("help.txt", "r")
+        fileHandler = open("help.txt", "r")
         while True:
             line = fileHandler.readline()
             if not line:
@@ -100,6 +101,28 @@ class Insecrawl:
                 'Country code {} ({}) returned 404! Insecam has no cameras from this country'.format(self.country, self.countryName))
             sys.exit(self.raiseCritical())
 
+    def CountCameras(self):
+        """
+            Calculate the total amount of cameras. Each page has six cameras. Omitting the last page, calculate the first batch of cameras, then count the occurrences of a certain URL on the last page.
+        """
+        url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
+            self.country, self.maxPages)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+        req = Request(url=url, headers=headers)
+        html = urlopen(req).read()
+
+        soup = BeautifulSoup(html, features="html.parser")
+        amountOfCameras = 6 * (int(self.maxPages) - 1)
+
+        for link in soup.find_all('a'):
+            text = link.get('href')
+            match = re.search(
+                '\/en\/view\/\d+\/', text)
+            if match:
+                amountOfCameras += 1
+        return amountOfCameras
+
     def ScrapeImages(self, page):
         """
         Save still images from a certain country and page number.
@@ -113,7 +136,6 @@ class Insecrawl:
         try:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
-            # print(soup)
             for img in soup.findAll('img'):
                 image_id = img.get('id')
                 self.logger.debug('START processing {}'.format(image_id))
@@ -136,14 +158,14 @@ class Insecrawl:
 
     def ScrapePages(self):
         page = 1
-        self.logger.debug(
-            'Scraping images from a total of {} pages.'.format(self.maxPages))
+        self.logger.info(
+            'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
         while page <= int(self.maxPages):
             self.logger.debug('START SCRAPING PAGE {} '.format(page))
             self.ScrapeImages(str(page))
             self.logger.debug('DONE SCRAPING PAGE {} '.format(page))
             page += 1
-        self.logger.debug('DONE scraping all requested pages.')
+        self.logger.info('DONE scraping all requested pages.')
 
     def printPageCount(self):
         """
@@ -159,7 +181,9 @@ class Insecrawl:
 
         self.logger.debug('Country code {} resolved to {}.'.format(
             self.country, self.countryName))
-        self.ScrapePages()
+        self.logger.info(
+            'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
+        # self.ScrapePages()
 
 
 if __name__ == '__main__':
