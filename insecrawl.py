@@ -20,11 +20,15 @@ class Insecrawl:
         self.logger = logging.getLogger(__name__)
 
         self.printAmount = False
+        self.printDetails = False
+        self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
+                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False}
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "vhc:PC"
-        gnuOptions = ["verbose", "help", "country=", "countCameras"]
+        unixOptions = "vhc:PCd:"
+        gnuOptions = ["verbose", "help",
+                      "country=", "countCameras", "details="]
 
         try:
             arguments, values = getopt.getopt(
@@ -43,6 +47,10 @@ class Insecrawl:
                 self.country = currentValue
             elif currentArgument in ("-C", "--countCameras"):
                 self.printAmount = True
+            elif currentArgument in ("-d", "--details"):
+                self.cameraDetails['id'] = currentValue
+                self.printDetails = True
+                self.main()
 
         try:
             self.countryDetails = countries.get(self.country)
@@ -123,6 +131,35 @@ class Insecrawl:
                 amountOfCameras += 1
         return amountOfCameras
 
+    def GetDetails(self):
+        # TODO: This is bugged. It cannot seem to find all <a> tags for some reason
+        # print("Getting details for {}".format(self.cameraDetails['id']))
+        url = 'https://www.insecam.org/en/view/{}/'.format(
+            self.cameraDetails['id'])
+        self.cameraDetails['insecamURL'] = url
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
+        req = Request(url=url, headers=headers)
+
+        try:
+            html = urlopen(req).read()
+            soup = BeautifulSoup(html, features="html.parser")
+            # print(soup)
+            for link in soup.find_all('a'):  # Find country and countrycode
+                match = re.search('\/en\/bycountry\/(\S+)\/', str(link))
+                if match:
+                    self.cameraDetails['countryCode'] = match.group(1)
+                    self.cameraDetails['country'] = link.get_text()
+            for script in soup.find_all('script'):      # Find tags
+                match = re.findall(
+                    'addtagset\(\"(\w+)\"\);', script.get_text())
+                if match:
+                    self.cameraDetails['tags'] = match
+            # print(self.cameraDetails)
+
+        except urllib.error.HTTPError:
+            self.logger.error('Country not found!')
+
     def ScrapeImages(self, page):
         """
         Save still images from a certain country and page number.
@@ -137,12 +174,17 @@ class Insecrawl:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
             for img in soup.findAll('img'):
-                image_id = img.get('id')
+                if img.get('id') is None:
+                    continue
+                match = re.search('image(\d+)', img.get('id'))
+                image_id = match.group(1)
+
                 self.logger.debug('START processing {}'.format(image_id))
                 image_url = img.get('src')
                 if "yandex" in image_url:
                     self.logger.debug('Not a valid IP camera URL. Skipping...')
-                    self.logger.debug('DONE processing {}'.format(image_id))
+                    self.logger.debug(
+                        'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
                 # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
@@ -152,7 +194,7 @@ class Insecrawl:
                     cv2.imwrite('./images/{}.jpg'.format(image_id), image)
                     self.logger.debug(
                         'Image saved to {}/images/{}.jpg'.format(self.path, image_id))
-                self.logger.debug('DONE processing {}'.format(image_id))
+                self.logger.debug('DONE processing imd ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
@@ -177,6 +219,16 @@ class Insecrawl:
     def main(self):
         if self.printAmount:
             self.printCameraCount()
+            sys.exit()
+
+        if self.printDetails:
+            self.GetDetails()
+            print("Camera ID: {}".format(self.cameraDetails['id']))
+            print("Country: {}".format(self.cameraDetails['country']))
+            print("Country code: {}".format(self.cameraDetails['countryCode']))
+            print("Tags: {}".format(self.cameraDetails['tags']))
+            print("URL on insecam.org : {}".format(
+                self.cameraDetails['insecamURL']))
             sys.exit()
 
         self.logger.debug('Country code {} resolved to {}.'.format(
