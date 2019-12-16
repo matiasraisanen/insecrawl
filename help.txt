@@ -12,3 +12,4 @@ ARGUMENTS
 -v, --verbose        Debug level logging
 -h, --help           Print this help page
 -C, --countCameras   Prints the amount of camera pages and total cameras of a given country. 
+-d, --details        Prints camera details. Provide camera ID.
