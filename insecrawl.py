@@ -218,7 +218,8 @@ class Insecrawl:
         self.logger.info('DONE scraping all requested pages.')
         self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
-        self.logger.info('Could not download images from {} cameras. Refer to the logs for details.'.format(errors))
+        if errors != 0:
+            self.logger.info('Could not download images from {} cameras. Refer to the logs for details.'.format(errors))
 
     def printCameraCount(self):
         """
