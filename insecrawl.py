@@ -224,10 +224,16 @@ class Insecrawl:
 
         if self.printDetails:
             self.GetDetails()
+            tags = ""
+            for i in self.cameraDetails['tags']:
+                tags = tags + i
+                if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
+                    tags = tags + ", "
+
             print("Camera ID: {}".format(self.cameraDetails['id']))
             print("Country: {}".format(self.cameraDetails['country']))
             print("Country code: {}".format(self.cameraDetails['countryCode']))
-            print("Tags: {}".format(self.cameraDetails['tags']))
+            print("Tags: {}".format(tags))
             print("URL on insecam.org : {}".format(
                 self.cameraDetails['insecamURL']))
             sys.exit()
