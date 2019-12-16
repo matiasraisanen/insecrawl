@@ -26,9 +26,9 @@ class Insecrawl:
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "vhc:PCd:"
+        unixOptions = "vhc:PC:d:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countCameras", "details="]
+                      "country=", "countCameras=", "details="]
 
         try:
             arguments, values = getopt.getopt(
@@ -46,6 +46,7 @@ class Insecrawl:
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
             elif currentArgument in ("-C", "--countCameras"):
+                self.country = currentValue
                 self.printAmount = True
             elif currentArgument in ("-d", "--details"):
                 self.cameraDetails['id'] = currentValue
