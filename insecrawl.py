@@ -63,6 +63,9 @@ class Insecrawl:
 
         self.maxPages = self.GetMaxPageNum()
         self.amountOfCameras = self.CountCameras()
+        self.progressCounter = 0
+        self.successfulScrapes = 0
+        self.erroredScrapes = 0
         self.pages = 1  # Default amount of pages to scrape
         self.path = os.getcwd()
         self.main()
@@ -189,12 +192,16 @@ class Insecrawl:
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
                 # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
+                
+                self.loadingBar(self.progressCounter, self.amountOfCameras)
                 vidObj = cv2.VideoCapture(image_url)
+                self.progressCounter += 1
                 success, image = vidObj.read()
                 if success:
                     cv2.imwrite('./images/{}.jpg'.format(image_id), image)
                     self.logger.debug(
                         'Image saved to {}/images/{}.jpg'.format(self.path, image_id))
+                    self.successfulScrapes += 1
                 self.logger.debug('DONE processing imd ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
@@ -209,6 +216,9 @@ class Insecrawl:
             self.logger.debug('DONE SCRAPING PAGE {} '.format(page))
             page += 1
         self.logger.info('DONE scraping all requested pages.')
+        self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
+        errors = self.amountOfCameras - self.successfulScrapes
+        self.logger.info('Could not download images from {} cameras. Refer to the logs for details.'.format(errors))
 
     def printCameraCount(self):
         """
@@ -216,6 +226,17 @@ class Insecrawl:
         """
         print('{} has {} cameras accross {} pages.'.format(
             self.countryName, self.amountOfCameras, self.maxPages))
+
+    def loadingBar(self, current, max):
+        """Loading bar graphix"""
+        percent = (current / max) * 100
+        doneText = ""
+        if percent == 100:
+            doneText = " Done!\n"
+        loadedBars = "█" * int(percent/5)
+        notLoadedBars = "▒" * (20 - int(percent/5))
+        loadText = "Progress: " + loadedBars + notLoadedBars + " " + str("%.2f" % percent)+ "% " + "("+str(current)+"/"+str(max)+")" + doneText
+        print (loadText, end="\r")
 
     def main(self):
         if self.printAmount:
