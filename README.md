@@ -35,7 +35,7 @@ $ python3 insecrawl.py -o 241666 -t
 Downloaded images will be saved in **./images** folder.
 
 Camera IDs are those found on insecam.org.  
-i.e. isothe ID of https://www.insecam.org/en/view/241666/ is **241666**
+i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 ## Arguments
 
