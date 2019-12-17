@@ -1,4 +1,0 @@
-# This directory will contain downloaded images.
-#Everything here will be ignored by Github.
-*
-!.gitignore
