@@ -22,11 +22,11 @@ class Insecrawl:
         self.printAmount = False
         self.printDetails = False
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
-                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False}
+                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "vhc:PC:d:"
+        unixOptions = "vhc:C:d:"
         gnuOptions = ["verbose", "help",
                       "country=", "countCameras=", "details="]
 
@@ -87,6 +87,14 @@ class Insecrawl:
         self.logger.critical(
             'Program encountered a critical error and must quit.')
 
+    def createDir(self, dirName):
+        """ Create directory for images, if it does not exist """
+        try:
+            os.makedirs(dirName)    
+            self.logger.debug("Created directory {}".format(dirName))
+        except FileExistsError:
+            pass
+
     def GetMaxPageNum(self):
         """
             Returns maximum number of camera pages for a certain country
@@ -104,7 +112,7 @@ class Insecrawl:
             maxPages = ""
             for script in soup.find_all('script'):
                 match = re.search(
-                    'pagenavigator\("\?page=", (\d+), \d+\);', script.get_text())
+                    r'pagenavigator\("\?page=", (\d+), \d+\);', script.get_text())
                 if match:
                     maxPages = match.group(1)
             return maxPages
@@ -129,8 +137,7 @@ class Insecrawl:
 
         for link in soup.find_all('a'):
             text = link.get('href')
-            match = re.search(
-                '\/en\/view\/\d+\/', text)
+            match = re.search(r'\/en\/view\/\d+\/', text)
             if match:
                 amountOfCameras += 1
         return amountOfCameras
@@ -148,18 +155,24 @@ class Insecrawl:
         try:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
-            # print(soup)
             for link in soup.find_all('a'):  # Find country and countrycode
-                match = re.search('\/en\/bycountry\/(\S+)\/', str(link))
+                match = re.search(r'\/en\/bycountry\/(\w+)\/', str(link))
                 if match:
                     self.cameraDetails['countryCode'] = match.group(1)
                     self.cameraDetails['country'] = link.get_text()
             for script in soup.find_all('script'):      # Find tags
                 match = re.findall(
-                    'addtagset\(\"(\w+)\"\);', script.get_text())
+                    r'addtagset\(\"(\w+)\"\);', script.get_text())
                 if match:
                     self.cameraDetails['tags'] = match
-            # print(self.cameraDetails)
+            for img in soup.findAll('img'):
+                if img.get('id') == "image0":
+                    if img.get('src') == "/static/no.jpg":
+                        self.cameraDetails['directURL'] = "NOT FOUND"
+                    
+                    else:
+                        url = urllib.parse.urlparse(img.get('src'))
+                        self.cameraDetails['directURL'] = "http://{}".format(url.netloc)
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
@@ -180,7 +193,7 @@ class Insecrawl:
             for img in soup.findAll('img'):
                 if img.get('id') is None:
                     continue
-                match = re.search('image(\d+)', img.get('id'))
+                match = re.search(r'image(\d+)', img.get('id'))
                 image_id = match.group(1)
 
                 self.logger.debug('START processing {}'.format(image_id))
@@ -210,6 +223,7 @@ class Insecrawl:
         page = 1
         self.logger.info(
             'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
+        self.createDir("./images")
         while page <= int(self.maxPages):
             self.logger.debug('START SCRAPING PAGE {} '.format(page))
             self.ScrapeImages(str(page))
@@ -219,7 +233,7 @@ class Insecrawl:
         self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
         if errors != 0:
-            self.logger.info('Could not download images from {} cameras. Refer to the logs for details.'.format(errors))
+            self.logger.info('Failed to download images from {} cameras. Refer to the logs for details.'.format(errors))
 
     def printCameraCount(self):
         """
@@ -258,6 +272,7 @@ class Insecrawl:
             print("Tags: {}".format(tags))
             print("URL on insecam.org : {}".format(
                 self.cameraDetails['insecamURL']))
+            print("Direct URL to camera: {}".format(self.cameraDetails['directURL']))
             sys.exit()
 
         self.logger.debug('Country code {} resolved to {}.'.format(
