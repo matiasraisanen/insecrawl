@@ -29,7 +29,10 @@ class Insecrawl:
         self.timeStamp = False
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
                               'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
-
+        self.progressCounter = 0
+        self.successfulScrapes = 0
+        self.erroredScrapes = 0
+        self.pages = 1  # Default amount of pages to scrape
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:C:d:o:"
@@ -67,17 +70,13 @@ class Insecrawl:
             try:
                 self.countryDetails = countries.get(self.country)
                 self.countryName = self.countryDetails.name
+                self.maxPages = self.GetMaxPageNum()
+                self.amountOfCameras = self.CountCameras()
             except:
                 self.logger.error(
                     'Could not resolve {} to a country.'.format(self.country))
                 sys.exit(self.raiseCritical())
-
-            self.maxPages = self.GetMaxPageNum()
-            self.amountOfCameras = self.CountCameras()
-        self.progressCounter = 0
-        self.successfulScrapes = 0
-        self.erroredScrapes = 0
-        self.pages = 1  # Default amount of pages to scrape
+        
         
         self.main()
 
@@ -209,12 +208,9 @@ class Insecrawl:
                     # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
                     
                     vidObj = cv2.VideoCapture(image_url)
-                    # self.progressCounter += 1
                     success, image = vidObj.read()
                     if success:
                         self.WriteImage(cameraID, image)
-                        
-                        # self.successfulScrapes += 1
                     self.logger.debug('DONE processing imd ID {}'.format(cameraID))
 
         except urllib.error.HTTPError:
@@ -296,7 +292,6 @@ class Insecrawl:
             self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
-            # sys.exit()
 
         if self.printDetails:
             self.GetDetails()
@@ -313,12 +308,10 @@ class Insecrawl:
             print("URL on insecam.org : {}".format(
                 self.cameraDetails['insecamURL']))
             print("Direct URL to camera: {}".format(self.cameraDetails['directURL']))
-            # sys.exit()
 
         if self.oneCamera:
             self.GetDetails()
             self.ScrapeOne(self.cameraDetails['id'])
-            # sys.exit()
         if self.country:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
