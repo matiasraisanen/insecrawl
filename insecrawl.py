@@ -82,9 +82,7 @@ class Insecrawl:
         self.main()
 
     def printHelp(self):
-        """
-            Prints a manual page.
-        """
+        """Prints a manual page."""
         fileHandler = open("help.txt", "r")
         file_contents = fileHandler.read()
         print (file_contents)
@@ -96,7 +94,7 @@ class Insecrawl:
             'Program encountered a critical error and must quit.')
 
     def createDir(self, dirName):
-        """ Create directory for images, if it does not exist """
+        """Create directory for images."""
         try:
             os.makedirs(dirName)    
             self.logger.debug("Created directory {}".format(dirName))
@@ -104,9 +102,7 @@ class Insecrawl:
             pass
 
     def GetMaxPageNum(self):
-        """
-            Returns maximum number of camera pages for a certain country
-        """
+        """Returns maximum number of camera pages for a certain country"""
 
         try:
             url = 'https://www.insecam.org/en/bycountry/{}/'.format(
@@ -151,8 +147,7 @@ class Insecrawl:
         return amountOfCameras
 
     def GetDetails(self):
-        # TODO: This is bugged. It cannot seem to find all <a> tags for some reason
-        # print("Getting details for {}".format(self.cameraDetails['id']))
+        """Get details for a camera"""
         url = 'https://www.insecam.org/en/view/{}/'.format(
             self.cameraDetails['id'])
         self.cameraDetails['insecamURL'] = url
@@ -185,6 +180,7 @@ class Insecrawl:
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
     def WriteImage(self, cameraID, image):
+        """Write image to disk"""
         timestampStr = ""
         if self.timeStamp:
             timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
@@ -193,7 +189,7 @@ class Insecrawl:
                             'Image saved to {}/images/{}{}.jpg'.format(self.path, cameraID, timestampStr))
 
     def ScrapeOne(self, cameraID):
-        """ Scrape image from one camera """
+        """Scrape image from one camera"""
 
         url = 'https://www.insecam.org/en/view/{}/'.format(
             cameraID)
@@ -225,9 +221,7 @@ class Insecrawl:
             self.logger.error('Country not found!')
 
     def ScrapeImages(self, page):
-        """
-        Save still images from a certain country and page number.
-        """
+        """Save still images from a certain country and page number."""
         url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
             self.country, page)
         headers = {
@@ -259,15 +253,13 @@ class Insecrawl:
                 success, image = vidObj.read()
                 if success:
                     self.WriteImage(image_id, image)
-                    # cv2.imwrite('./images/{}.jpg'.format(image_id), image)
-                    # self.logger.debug(
-                        # 'Image saved to {}/images/{}.jpg'.format(self.path, image_id))
                     self.successfulScrapes += 1
                 self.logger.debug('DONE processing imd ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
     def ScrapePages(self):
+        """Scrape pages for a given country"""
         page = 1
         self.logger.info(
             'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
@@ -284,9 +276,7 @@ class Insecrawl:
             self.logger.info('Failed to download images from {} cameras. Refer to the logs for details.'.format(errors))
 
     def printCameraCount(self):
-        """
-        Prints page and camera count, then exits the program.
-        """
+        """Prints camera count for give country"""
         print('{} has {} cameras accross {} pages.'.format(
             self.countryName, self.amountOfCameras, self.maxPages))
 
