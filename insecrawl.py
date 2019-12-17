@@ -9,6 +9,7 @@ import sys
 import os
 from iso3166 import countries
 import logging
+from datetime import datetime
 
 
 class Insecrawl:
@@ -18,17 +19,22 @@ class Insecrawl:
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
                             datefmt='%H:%M:%S', level=logging.INFO)
         self.logger = logging.getLogger(__name__)
-
+        self.path = os.getcwd()
+        self.dateTimeObj = datetime.now()
         self.printAmount = False
         self.printDetails = False
+        self.oneCamera = False
+        self.verboseLogging = False
+        self.country = False
+        self.timeStamp = False
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
                               'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
 
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "vhc:C:d:"
+        unixOptions = "tvhc:C:d:o:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countCameras=", "details="]
+                      "country=", "countCameras=", "details=", "oneCamera=", "timeStamp"]
 
         try:
             arguments, values = getopt.getopt(
@@ -40,7 +46,7 @@ class Insecrawl:
 
         for currentArgument, currentValue in arguments:
             if currentArgument in ("-v", "--verbose"):
-                self.logger.setLevel(logging.DEBUG)
+                self.verboseLogging = True
             elif currentArgument in ("-h", "--help"):
                 self.printHelp()
             elif currentArgument in ("-c", "--country"):
@@ -51,23 +57,28 @@ class Insecrawl:
             elif currentArgument in ("-d", "--details"):
                 self.cameraDetails['id'] = currentValue
                 self.printDetails = True
-                self.main()
+            elif currentArgument in ("-o", "--oneCamera"):
+                self.cameraDetails['id'] = currentValue
+                self.oneCamera = True
+            elif currentArgument in ("-t", "--timeStamp"):
+                self.timeStamp = True
 
-        try:
-            self.countryDetails = countries.get(self.country)
-            self.countryName = self.countryDetails.name
-        except:
-            self.logger.error(
-                'Could not resolve {} to a country.'.format(self.country))
-            sys.exit(self.raiseCritical())
+        if self.country:
+            try:
+                self.countryDetails = countries.get(self.country)
+                self.countryName = self.countryDetails.name
+            except:
+                self.logger.error(
+                    'Could not resolve {} to a country.'.format(self.country))
+                sys.exit(self.raiseCritical())
 
-        self.maxPages = self.GetMaxPageNum()
-        self.amountOfCameras = self.CountCameras()
+            self.maxPages = self.GetMaxPageNum()
+            self.amountOfCameras = self.CountCameras()
         self.progressCounter = 0
         self.successfulScrapes = 0
         self.erroredScrapes = 0
         self.pages = 1  # Default amount of pages to scrape
-        self.path = os.getcwd()
+        
         self.main()
 
     def printHelp(self):
@@ -75,11 +86,8 @@ class Insecrawl:
             Prints a manual page.
         """
         fileHandler = open("help.txt", "r")
-        while True:
-            line = fileHandler.readline()
-            if not line:
-                break
-            print(line.strip())
+        file_contents = fileHandler.read()
+        print (file_contents)
         fileHandler.close()
         sys.exit()
 
@@ -176,6 +184,45 @@ class Insecrawl:
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
+    def WriteImage(self, cameraID, image):
+        timestampStr = ""
+        if self.timeStamp:
+            timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
+        cv2.imwrite('./images/{}{}.jpg'.format(cameraID,timestampStr), image)
+        self.logger.debug(
+                            'Image saved to {}/images/{}{}.jpg'.format(self.path, cameraID, timestampStr))
+
+    def ScrapeOne(self, cameraID):
+        """ Scrape image from one camera """
+
+        url = 'https://www.insecam.org/en/view/{}/'.format(
+            cameraID)
+        self.cameraDetails['insecamURL'] = url
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
+        req = Request(url=url, headers=headers)
+
+        try:
+            html = urlopen(req).read()
+            soup = BeautifulSoup(html, features="html.parser")
+            for img in soup.findAll('img'):
+                if img.get('id') == "image0":
+                    self.logger.debug('START processing {}'.format(cameraID))
+                    image_url = img.get('src')                    
+                    self.logger.debug('Image URL: {}'.format(image_url))
+                    # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
+                    
+                    vidObj = cv2.VideoCapture(image_url)
+                    # self.progressCounter += 1
+                    success, image = vidObj.read()
+                    if success:
+                        self.WriteImage(cameraID, image)
+                        
+                        # self.successfulScrapes += 1
+                    self.logger.debug('DONE processing imd ID {}'.format(cameraID))
+
+        except urllib.error.HTTPError:
+            self.logger.error('Country not found!')
 
     def ScrapeImages(self, page):
         """
@@ -211,9 +258,10 @@ class Insecrawl:
                 self.progressCounter += 1
                 success, image = vidObj.read()
                 if success:
-                    cv2.imwrite('./images/{}.jpg'.format(image_id), image)
-                    self.logger.debug(
-                        'Image saved to {}/images/{}.jpg'.format(self.path, image_id))
+                    self.WriteImage(image_id, image)
+                    # cv2.imwrite('./images/{}.jpg'.format(image_id), image)
+                    # self.logger.debug(
+                        # 'Image saved to {}/images/{}.jpg'.format(self.path, image_id))
                     self.successfulScrapes += 1
                 self.logger.debug('DONE processing imd ID {}'.format(image_id))
         except urllib.error.HTTPError:
@@ -254,9 +302,11 @@ class Insecrawl:
         print (loadText, end="\r")
 
     def main(self):
+        if self.verboseLogging:
+            self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
-            sys.exit()
+            # sys.exit()
 
         if self.printDetails:
             self.GetDetails()
@@ -273,11 +323,17 @@ class Insecrawl:
             print("URL on insecam.org : {}".format(
                 self.cameraDetails['insecamURL']))
             print("Direct URL to camera: {}".format(self.cameraDetails['directURL']))
-            sys.exit()
+            # sys.exit()
 
-        self.logger.debug('Country code {} resolved to {}.'.format(
-            self.country, self.countryName))
-        self.ScrapePages()
+        if self.oneCamera:
+            self.GetDetails()
+            self.ScrapeOne(self.cameraDetails['id'])
+            # sys.exit()
+        if self.country:
+            self.logger.debug('Country code {} resolved to {}.'.format(
+                self.country, self.countryName))
+            self.ScrapePages()
+        sys.exit()
 
 
 if __name__ == '__main__':
