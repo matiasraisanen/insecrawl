@@ -10,7 +10,7 @@ import os
 from iso3166 import countries
 import logging
 from datetime import datetime
-
+import json
 
 class Insecrawl:
 
@@ -29,15 +29,16 @@ class Insecrawl:
         self.timeStamp = False
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
                               'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
+        self.countriesJSON = False
         self.progressCounter = 0
         self.successfulScrapes = 0
         self.erroredScrapes = 0
         self.pages = 1  # Default amount of pages to scrape
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:C:d:o:"
+        unixOptions = "tvhc:Cd:o:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countCameras=", "details=", "oneCamera=", "timeStamp"]
+                      "country=", "cameraCount", "details=", "oneCamera=", "timeStamp"]
 
         try:
             arguments, values = getopt.getopt(
@@ -54,8 +55,7 @@ class Insecrawl:
                 self.printHelp()
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
-            elif currentArgument in ("-C", "--countCameras"):
-                self.country = currentValue
+            elif currentArgument in ("-C", "--cameraCount"):
                 self.printAmount = True
             elif currentArgument in ("-d", "--details"):
                 self.cameraDetails['id'] = currentValue
@@ -79,6 +79,26 @@ class Insecrawl:
         
         
         self.main()
+
+    def GetCountriesJSON(self):
+        """Fetch a JSON of country codes, countries and camera count"""
+        try:
+            url = 'https://www.insecam.org/en/jsoncountries/'
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
+            req = Request(url=url, headers=headers)
+            countriesjson = json.loads(urlopen(req).read().decode())
+            self.countriesJSON = countriesjson['countries']
+            # return(countriesjson['countries'])
+        except:
+            self.logger.error("Could not fetch countries JSON from insecam")
+        
+    def printCameraCount(self):
+        self.GetCountriesJSON()
+        for key in sorted(self.countriesJSON.keys()):
+            value = self.countriesJSON[key]
+            print("[{}] {} has {} cameras".format(
+                key, value['country'], value['count']))
 
     def printHelp(self):
         """Prints a manual page."""
@@ -123,27 +143,6 @@ class Insecrawl:
             self.logger.error(
                 'Country code {} ({}) returned 404! Insecam has no cameras from this country'.format(self.country, self.countryName))
             sys.exit(self.raiseCritical())
-
-    def CountCameras(self):
-        """
-            Calculate the total amount of cameras. Each page has six cameras. Omitting the last page, calculate the first batch of cameras, then count the occurrences of a certain URL on the last page.
-        """
-        url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
-            self.country, self.maxPages)
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
-        req = Request(url=url, headers=headers)
-        html = urlopen(req).read()
-
-        soup = BeautifulSoup(html, features="html.parser")
-        amountOfCameras = 6 * (int(self.maxPages) - 1)
-
-        for link in soup.find_all('a'):
-            text = link.get('href')
-            match = re.search(r'\/en\/view\/\d+\/', text)
-            if match:
-                amountOfCameras += 1
-        return amountOfCameras
 
     def GetDetails(self):
         """Get details for a camera"""
@@ -271,10 +270,10 @@ class Insecrawl:
         if errors != 0:
             self.logger.info('Failed to download images from {} cameras. Refer to the logs for details.'.format(errors))
 
-    def printCameraCount(self):
-        """Prints camera count for give country"""
-        print('{} has {} cameras accross {} pages.'.format(
-            self.countryName, self.amountOfCameras, self.maxPages))
+    # def printCameraCount(self):
+    #     """Prints camera count for give country"""
+    #     print('{} has {} cameras accross {} pages.'.format(
+    #         self.countryName, self.amountOfCameras, self.maxPages))
 
     def loadingBar(self, current, max):
         """Loading bar graphix"""
@@ -292,6 +291,7 @@ class Insecrawl:
             self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
+            # self.printCameraCount()
 
         if self.printDetails:
             self.GetDetails()

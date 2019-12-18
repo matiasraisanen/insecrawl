@@ -1,10 +1,10 @@
 # Insecrawl
 
+![Python3.7](https://img.shields.io/badge/python-3.7-green)
+
 Insecam Crawler
 
-Crawls insecam pages on your command, and downloads a still frame from cameras.
-
-Written in Python 3.7.
+Downloads stills from IP cameras found on insecam.org
 
 ## Run
 
@@ -40,21 +40,21 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 ## Arguments
 
 ```
--c, --country        Desired country as a two letter code (ISO 3166-1 alpha-2)
+-c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
 
--v, --verbose        Debug level logging
+-v, --verbose       Debug level logging
 
--h, --help           Print this help page
+-h, --help          Print this help page
 
--C, --countCameras   Prints the amount of camera pages and total cameras
-                     of a given country.
+-C, --cameraCount   Prints a list of each country that has cameras available,
+                    and their respective amount
 
--d, --details        Prints details for a given camera ID.
+-d, --details       Prints details for a given camera ID.
 
--t, --timeStamp      Append timestamp to image filename. Useful if you don't
-                     want to overwrite previously saved images. Timestamp
-                     format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
-                     local time and a 24h clock.
+-t, --timeStamp     Append timestamp to image filename. Useful if you don't
+                    want to overwrite previously saved images. Timestamp
+                    format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
+                    local time and a 24h clock.
 ```
 
 ## Project structure
