@@ -44,7 +44,7 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 -c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
 
--C, --countryList   Prints a lis containing each country that has cameras
+-C, --countryList   Prints a list containing each country that has cameras
                     on insecam, and their respective amounts.
 
 -d, --details       Prints details for a given camera ID.
