@@ -38,7 +38,7 @@ class Insecrawl:
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:Cd:o:"
         gnuOptions = ["verbose", "help",
-                      "country=", "cameraCount", "details=", "oneCamera=", "timeStamp"]
+                      "country=", "countryList", "details=", "oneCamera=", "timeStamp"]
 
         try:
             arguments, values = getopt.getopt(
@@ -55,7 +55,7 @@ class Insecrawl:
                 self.printHelp()
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
-            elif currentArgument in ("-C", "--cameraCount"):
+            elif currentArgument in ("-C", "--countryList"):
                 self.printAmount = True
             elif currentArgument in ("-d", "--details"):
                 self.cameraDetails['id'] = currentValue
@@ -177,6 +177,7 @@ class Insecrawl:
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
+
     def WriteImage(self, cameraID, image):
         """Write image to disk"""
         timestampStr = ""

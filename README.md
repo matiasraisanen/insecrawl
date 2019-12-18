@@ -46,8 +46,8 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 -h, --help          Print this help page
 
--C, --cameraCount   Prints a list of each country that has cameras available,
-                    and their respective amount
+-C, --countryList   Prints a lis containing each country that has cameras
+                    on insecam, and their respective amounts.
 
 -d, --details       Prints details for a given camera ID.
 
