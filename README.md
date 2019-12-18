@@ -55,6 +55,10 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
                     want to overwrite previously saved images. Timestamp
                     format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
                     local time and a 24h clock.
+
+-f, --folder        Provide a custom path for downloaded images. If not
+                    provided, images will be saved to the default
+                    folder ./images/
 ```
 
 ## Project structure

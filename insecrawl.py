@@ -34,11 +34,12 @@ class Insecrawl:
         self.successfulScrapes = 0
         self.erroredScrapes = 0
         self.pages = 1  # Default amount of pages to scrape
+        self.downloadFolder = "./images"
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:Cd:o:"
+        unixOptions = "tvhc:Cd:o:f:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countryList", "details=", "oneCamera=", "timeStamp"]
+                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder="]
 
         try:
             arguments, values = getopt.getopt(
@@ -65,6 +66,8 @@ class Insecrawl:
                 self.oneCamera = True
             elif currentArgument in ("-t", "--timeStamp"):
                 self.timeStamp = True
+            elif currentArgument in ("-f", "--folder"):
+                self.downloadFolder = currentValue
 
         if self.country:
             try:
@@ -260,7 +263,7 @@ class Insecrawl:
         self.amountOfCameras = self.countriesJSON[self.country]['count']
         self.logger.info(
             'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras, self.maxPages))
-        self.createDir("./images")
+        self.createDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START SCRAPING PAGE {} '.format(page))
             self.ScrapeImages(str(page))

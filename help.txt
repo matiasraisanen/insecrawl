@@ -23,3 +23,7 @@ ARGUMENTS
                     want to overwrite previously saved images. Timestamp
                     format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
                     local time and a 24h clock.
+
+-f, --folder        Provide a custom path for downloaded images. If not 
+                    provided, images will be saved to the default 
+                    folder ./images/
