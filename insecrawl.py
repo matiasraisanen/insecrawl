@@ -33,7 +33,6 @@ class Insecrawl:
         self.progressCounter = 0
         self.successfulScrapes = 0
         self.erroredScrapes = 0
-        self.pages = 1  # Default amount of pages to scrape
         self.downloadFolder = "./images"
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
