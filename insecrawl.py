@@ -185,9 +185,9 @@ class Insecrawl:
         timestampStr = ""
         if self.timeStamp:
             timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
-        cv2.imwrite('./images/{}{}.jpg'.format(cameraID,timestampStr), image)
+        cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder, cameraID,timestampStr), image)
         self.logger.debug(
-                            'Image saved to {}/images/{}{}.jpg'.format(self.path, cameraID, timestampStr))
+                            'Image saved to {}/{}/{}{}.jpg'.format(self.path, self.downloadFolder, cameraID, timestampStr))
 
     def ScrapeOne(self, cameraID):
         """Scrape image from one camera"""
