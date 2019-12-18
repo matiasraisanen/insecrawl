@@ -40,11 +40,9 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 ## Arguments
 
 ```
--c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
-
--v, --verbose       Debug level logging
-
 -h, --help          Print this help page
+
+-c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
 
 -C, --countryList   Prints a lis containing each country that has cameras
                     on insecam, and their respective amounts.
@@ -53,12 +51,14 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
-                    format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
+                    format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
                     local time and a 24h clock.
 
 -f, --folder        Provide a custom path for downloaded images. If not
                     provided, images will be saved to the default
-                    folder ./images/
+                    folder ./images
+
+-v, --verbose       Debug level logging
 ```
 
 ## Project structure

@@ -8,22 +8,22 @@ Insecam crawler. Downloads a still frame of live feeds on insecam.org
 ARGUMENTS
 ═════════
 
--c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
-
--v, --verbose       Debug level logging
-
 -h, --help          Print this help page
 
--C, --countryList   Prints a lis containing each country that has cameras 
+-c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
+
+-C, --countryList   Prints a lis containing each country that has cameras
                     on insecam, and their respective amounts.
 
 -d, --details       Prints details for a given camera ID.
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
-                    format is [YYYY-MM-DD]-[HH:MM:SS], uses computer's
+                    format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
                     local time and a 24h clock.
 
--f, --folder        Provide a custom path for downloaded images. If not 
-                    provided, images will be saved to the default 
-                    folder ./images/
+-f, --folder        Provide a custom path for downloaded images. If not
+                    provided, images will be saved to the default
+                    folder ./images
+
+-v, --verbose       Debug level logging
