@@ -213,7 +213,7 @@ class Insecrawl:
                     success, image = vidObj.read()
                     if success:
                         self.WriteImage(cameraID, image)
-                    self.logger.debug('DONE processing imd ID {}'.format(cameraID))
+                    self.logger.debug('DONE processing camera ID {}'.format(cameraID))
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
@@ -252,7 +252,7 @@ class Insecrawl:
                 if success:
                     self.WriteImage(image_id, image)
                     self.successfulScrapes += 1
-                self.logger.debug('DONE processing imd ID {}'.format(image_id))
+                self.logger.debug('DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
