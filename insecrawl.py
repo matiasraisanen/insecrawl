@@ -71,7 +71,7 @@ class Insecrawl:
                 self.countryDetails = countries.get(self.country)
                 self.countryName = self.countryDetails.name
                 self.maxPages = self.GetMaxPageNum()
-                self.amountOfCameras = self.CountCameras()
+                self.GetCountriesJSON()
             except:
                 self.logger.error(
                     'Could not resolve {} to a country.'.format(self.country))
@@ -257,15 +257,16 @@ class Insecrawl:
     def ScrapePages(self):
         """Scrape pages for a given country"""
         page = 1
+        self.amountOfCameras = self.countriesJSON[self.country]['count']
         self.logger.info(
-            'Scraping images from cameras in {}: a total of {} cameras, across {} pages. Please wait.'.format(self.countryName, self.amountOfCameras, self.maxPages))
+            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras, self.maxPages))
         self.createDir("./images")
         while page <= int(self.maxPages):
             self.logger.debug('START SCRAPING PAGE {} '.format(page))
             self.ScrapeImages(str(page))
             self.logger.debug('DONE SCRAPING PAGE {} '.format(page))
             page += 1
-        self.logger.info('DONE scraping all requested pages.')
+        self.logger.info('DONE scraping all requested cameras.')
         self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
         if errors != 0:
