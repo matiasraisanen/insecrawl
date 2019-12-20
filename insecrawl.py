@@ -19,7 +19,6 @@ class Insecrawl:
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
                             datefmt='%H:%M:%S', level=logging.INFO)
         self.logger = logging.getLogger(__name__)
-        self.path = os.getcwd()
         self.dateTimeObj = datetime.now()
         self.printAmount = False
         self.printDetails = False
@@ -120,6 +119,7 @@ class Insecrawl:
         self.logger.critical(
             'Program encountered a critical error and must quit.')
 
+
     def createDir(self, dirName):
         """Create directory for images."""
         try:
@@ -130,7 +130,6 @@ class Insecrawl:
 
     def GetMaxPageNum(self):
         """Returns maximum number of camera pages for a certain country"""
-
         try:
             url = 'https://www.insecam.org/en/bycountry/{}/'.format(
                 self.country)
@@ -196,11 +195,10 @@ class Insecrawl:
             timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
         cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder, cameraID,timestampStr), image)
         self.logger.debug(
-                            'Image saved to {}/{}/{}{}.jpg'.format(self.path, self.downloadFolder, cameraID, timestampStr))
+                            'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
 
     def DownloadCustomURL(self):
         """Download a still frame from a custom URL."""
-
         if self.customIdentifier:
             cameraID = self.customIdentifier
         else:
@@ -225,7 +223,6 @@ class Insecrawl:
 
     def ScrapeOne(self, cameraID):
         """Scrape image from one camera"""
-
         url = 'https://www.insecam.org/en/view/{}/'.format(
             cameraID)
         self.cameraDetails['insecamURL'] = url
