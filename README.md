@@ -4,7 +4,10 @@
 
 Insecam Crawler
 
-Downloads stills from IP cameras found on insecam.org
+Downloads still frames from IP cameras listed on insecam.org
+
+**DISCLAIMER:**  
+**I am in no way affiliated with insecam. I just wanted to have an easier way of browsing cameras on the site.**
 
 ## Run
 
