@@ -163,7 +163,7 @@ class Insecrawl:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
             for link in soup.find_all('a'):
-                match = re.search(r'\/en\/bycountry\/(\w+)\/', str(link))
+                matchCountry = re.search(r'\/en\/bycountry\/(\w+)\/', str(link))
                 if matchCountry:
                     self.cameraDetails['countryCode'] = matchCountry.group(1)
                     self.cameraDetails['country'] = link.get_text()
