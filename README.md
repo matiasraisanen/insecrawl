@@ -65,7 +65,7 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 -u, --url           Provide a direct URL to a video stream to download a still frame
                     from. Useful if the camera is no longer on insecam, but still
-                    has an accessible web interface. Must be used in conjuction
+                    has a publicly accessible web interface. Must be used in conjuction
                     with -i or --identifier.
 
 -i, --identifier    Provide a custom identifier for the camera, used as

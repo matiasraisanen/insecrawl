@@ -1,9 +1,9 @@
 
-╔══════════════════════╗
-║       InseCrawl      ║ v0.1
-╚══════════════════════╝ By: Matias Raisanen 2019 || http://matiasraisanen.com
+╔══════════════════════╗ 
+║       InseCrawl      ║ By: Matias Raisanen 2019
+╚══════════════════════╝     http://matiasraisanen.com
 
-Insecam crawler. Downloads a still frame of live feeds on insecam.org
+Insecam crawler. Downloads still frames from IP cameras listed on insecam.org
 
 ARGUMENTS
 ═════════
@@ -30,7 +30,7 @@ ARGUMENTS
 
 -u, --url           Provide a direct URL to a video stream to download a still frame 
                     from. Useful if the camera is no longer on insecam, but still 
-                    has an accessible web interface. Must be used in conjuction 
+                    has a publicly accessible web interface. Must be used in conjuction 
                     with -i or --identifier. 
                 
 -i, --identifier    Provide a custom identifier for the camera, used as 
