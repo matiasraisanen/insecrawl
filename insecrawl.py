@@ -96,7 +96,6 @@ class Insecrawl:
             req = Request(url=url, headers=headers)
             countriesjson = json.loads(urlopen(req).read().decode())
             self.countriesJSON = countriesjson['countries']
-            # return(countriesjson['countries'])
         except:
             self.logger.error("Could not fetch countries JSON from insecam")
         
@@ -310,11 +309,6 @@ class Insecrawl:
         if errors != 0:
             self.logger.info('Failed to download images from {} cameras. Refer to the logs for details.'.format(errors))
 
-    # def printCameraCount(self):
-    #     """Prints camera count for give country"""
-    #     print('{} has {} cameras accross {} pages.'.format(
-    #         self.countryName, self.amountOfCameras, self.maxPages))
-
     def loadingBar(self, current, max):
         """Loading bar graphix"""
         percent = (current / max) * 100
@@ -331,8 +325,6 @@ class Insecrawl:
             self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
-            # self.printCameraCount()
-
         if self.printDetails:
             self.GetDetails()
             tags = ""
