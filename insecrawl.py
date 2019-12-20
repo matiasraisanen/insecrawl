@@ -33,12 +33,14 @@ class Insecrawl:
         self.progressCounter = 0
         self.successfulScrapes = 0
         self.erroredScrapes = 0
-        self.downloadFolder = "./images"
+        self.downloadFolder = "images"
+        self.customURL = False
+        self.customIdentifier = False
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:Cd:o:f:"
+        unixOptions = "tvhc:Cd:o:f:u:i:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder="]
+                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier="]
 
         try:
             arguments, values = getopt.getopt(
@@ -63,10 +65,14 @@ class Insecrawl:
             elif currentArgument in ("-o", "--oneCamera"):
                 self.cameraDetails['id'] = currentValue
                 self.oneCamera = True
+            elif currentArgument in ("-u", "--url"):
+                self.customURL = currentValue
             elif currentArgument in ("-t", "--timeStamp"):
                 self.timeStamp = True
             elif currentArgument in ("-f", "--folder"):
                 self.downloadFolder = currentValue
+            elif currentArgument in ("-i", "--identifier"):
+                self.customIdentifier = currentValue
 
         if self.country:
             try:
@@ -189,6 +195,31 @@ class Insecrawl:
         self.logger.debug(
                             'Image saved to {}/{}/{}{}.jpg'.format(self.path, self.downloadFolder, cameraID, timestampStr))
 
+    def DownloadCustomURL(self):
+        """Download a still frame from a custom URL."""
+
+        if self.customIdentifier:
+            cameraID = self.customIdentifier
+        else:
+            self.logger.error('You must provide a custom identifier string (used for filename) for the camera by using -i or --identifier')
+            sys.exit(self.raiseCritical())
+            
+        try:
+            
+            self.logger.debug('START processing {}'.format(self.customURL))
+            # image_url = img.get('src')                    
+            self.logger.debug('Image URL: {}'.format(self.customURL))
+            vidObj = cv2.VideoCapture(self.customURL)
+            success, image = vidObj.read()
+            # print(vidObj)
+            if success:
+                self.WriteImage(cameraID, image)
+            self.logger.debug('DONE processing camera ID {}'.format(self.customURL))
+
+        except:
+            self.logger.error('Could not download image')
+
+
     def ScrapeOne(self, cameraID):
         """Scrape image from one camera"""
 
@@ -198,6 +229,11 @@ class Insecrawl:
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
         req = Request(url=url, headers=headers)
+
+        if self.customIdentifier:
+            cameraName = self.customIdentifier
+        else:
+            cameraName = cameraID
 
         try:
             html = urlopen(req).read()
@@ -212,7 +248,7 @@ class Insecrawl:
                     vidObj = cv2.VideoCapture(image_url)
                     success, image = vidObj.read()
                     if success:
-                        self.WriteImage(cameraID, image)
+                        self.WriteImage(cameraName, image)
                     self.logger.debug('DONE processing camera ID {}'.format(cameraID))
 
         except urllib.error.HTTPError:
@@ -316,10 +352,13 @@ class Insecrawl:
         if self.oneCamera:
             self.GetDetails()
             self.ScrapeOne(self.cameraDetails['id'])
+        if self.customURL:
+            self.DownloadCustomURL()
         if self.country:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
             self.ScrapePages()
+        self.logger.info('Done')
         sys.exit()
 
 
