@@ -164,11 +164,14 @@ class Insecrawl:
         try:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
-            for link in soup.find_all('a'):  # Find country and countrycode
+            for link in soup.find_all('a'):
                 match = re.search(r'\/en\/bycountry\/(\w+)\/', str(link))
-                if match:
-                    self.cameraDetails['countryCode'] = match.group(1)
+                if matchCountry:
+                    self.cameraDetails['countryCode'] = matchCountry.group(1)
                     self.cameraDetails['country'] = link.get_text()
+                matchManufacturer = re.search(r'\/en\/bytype\/(\w+)\/', str(link))
+                if matchManufacturer:
+                    self.cameraDetails['manufacturer'] = link.get_text()
             for script in soup.find_all('script'):      # Find tags
                 match = re.findall(
                     r'addtagset\(\"(\w+)\"\);', script.get_text())
@@ -342,6 +345,7 @@ class Insecrawl:
                     tags = tags + ", "
 
             print("Camera ID: {}".format(self.cameraDetails['id']))
+            print("Manufacturer: {}".format(self.cameraDetails['manufacturer']))
             print("Country: {}".format(self.cameraDetails['country']))
             print("Country code: {}".format(self.cameraDetails['countryCode']))
             print("Tags: {}".format(tags))
