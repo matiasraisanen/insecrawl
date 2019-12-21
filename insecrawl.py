@@ -209,7 +209,7 @@ class Insecrawl:
                 matchManufacturer = re.search(r'\/en\/bytype\/(\w+)\/', str(link))
                 if matchManufacturer:
                     self.cameraDetails['manufacturer'] = link.get_text()
-            for script in soup.find_all('script'):      # Find tags
+            for script in soup.find_all('script'):
                 match = re.findall(
                     r'addtagset\(\"(\w+)\"\);', script.get_text())
                 if match:
@@ -246,11 +246,9 @@ class Insecrawl:
         try:
             
             self.logger.debug('START processing camera ID {}'.format(self.customURL))
-            # image_url = img.get('src')                    
             self.logger.debug('Image URL: {}'.format(self.customURL))
             vidObj = cv2.VideoCapture(self.customURL)
             success, image = vidObj.read()
-            # print(vidObj)
             if success:
                 self.WriteImage(cameraID, image)
             self.logger.debug('DONE processing camera ID {}'.format(self.customURL))
@@ -281,8 +279,7 @@ class Insecrawl:
                     self.logger.debug('START processing {}'.format(cameraID))
                     image_url = img.get('src')                    
                     self.logger.debug('Image URL: {}'.format(image_url))
-                    # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
-                    
+                    # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
                     vidObj = cv2.VideoCapture(image_url)
                     success, image = vidObj.read()
                     if success:
@@ -317,8 +314,7 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                # TODO: This can sometimes raise a logger kind of error. Need to integrate it into class level logging.
-                
+                # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
                 self.loadingBar(self.progressCounter, self.amountOfCameras)
                 vidObj = cv2.VideoCapture(image_url)
                 self.progressCounter += 1
@@ -362,7 +358,6 @@ class Insecrawl:
     def main(self):
         if self.verboseLogging:
             self.handler.setLevel(logging.DEBUG)
-            # self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
         if self.printDetails:
