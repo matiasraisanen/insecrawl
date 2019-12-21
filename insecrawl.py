@@ -351,7 +351,7 @@ class Insecrawl:
         self.logger.info('Successfully downloaded a total of {} images.'.format(
             self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
-        if errors != 0:
+        if errors <= 0:
             self.logger.info(
                 'Failed to download images from {} cameras.'.format(errors))
 
