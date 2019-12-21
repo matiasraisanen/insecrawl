@@ -6,6 +6,8 @@ Insecam Crawler
 
 Downloads still frames from IP cameras listed on [insecam.org](https://www.insecam.org/)
 
+Uses OpenCV to scrape stills off of the IP camera live streams.
+
 **DISCLAIMER:**  
 **I am in no way affiliated with insecam. I just wanted to have an easier way of browsing cameras on the site.**
 
@@ -45,10 +47,11 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 ```
 -h, --help          Print this help page
 
--c, --country       Desired country as a two letter code (ISO 3166-1 alpha-2)
+-c, --country       Designate a country, and scrape stills from all cameras in
+                    that country. Provide a two letter country code (ISO 3166-1 alpha-2)
 
--C, --countryList   Prints a list containing each country that has cameras
-                    on insecam, and their respective amounts.
+-C, --countryList   Prints all countries, country codes and camera amounts listed on
+                    insecam.org
 
 -d, --details       Prints details for a given camera ID.
 
