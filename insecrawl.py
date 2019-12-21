@@ -58,7 +58,7 @@ class Insecrawl:
                       "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier="]
 
         try:
-            arguments, values = getopt.getopt(
+            arguments, _ = getopt.getopt(
                 argumentList, unixOptions, gnuOptions)
         except getopt.error as err:
             print('Invalid option: -{}'.format(err.args[1]))
@@ -340,7 +340,7 @@ class Insecrawl:
         page = 1
         self.amountOfCameras = self.countriesJSON[self.country]['count']
         self.logger.info(
-            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras, self.maxPages))
+            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras,))
         self.createDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START scraping camera page {} '.format(page))
