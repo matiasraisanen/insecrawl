@@ -1,20 +1,21 @@
-from bs4 import BeautifulSoup
-import requests
-from urllib.request import urlopen, Request
-import cv2
-import re
-import urllib
-import getopt
-import sys
-import os
-from iso3166 import countries
-import logging
-from datetime import datetime
-import json
 import ctypes
+import getopt
 import io
+import json
+import logging
+import os
+import re
+import requests
+import sys
 import tempfile
+import urllib
 from contextlib import contextmanager
+from datetime import datetime
+from urllib.request import urlopen, Request
+
+import cv2
+from bs4 import BeautifulSoup
+from iso3166 import countries
 
 class Insecrawl:
 
