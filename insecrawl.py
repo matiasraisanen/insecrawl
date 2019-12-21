@@ -22,7 +22,6 @@ class Insecrawl:
         self.libc = ctypes.CDLL(None)
         self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
         
-        
         # Logger setup  
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
                             datefmt='%H:%M:%S', level=logging.DEBUG)
@@ -32,7 +31,7 @@ class Insecrawl:
         formatter = logging.Formatter('[%(asctime)s]-[%(levelname)s]: %(message)s', datefmt='%H:%M:%S')
         self.handler.setFormatter(formatter)
         self.logger.addHandler(self.handler)
-
+        # Logger setup finished
 
         self.dateTimeObj = datetime.now()
         self.printAmount = False
@@ -245,7 +244,7 @@ class Insecrawl:
             
         try:
             
-            self.logger.debug('START processing {}'.format(self.customURL))
+            self.logger.debug('START processing camera ID {}'.format(self.customURL))
             # image_url = img.get('src')                    
             self.logger.debug('Image URL: {}'.format(self.customURL))
             vidObj = cv2.VideoCapture(self.customURL)
@@ -338,15 +337,15 @@ class Insecrawl:
             'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras, self.maxPages))
         self.createDir(self.downloadFolder)
         while page <= int(self.maxPages):
-            self.logger.debug('START SCRAPING PAGE {} '.format(page))
+            self.logger.debug('START scraping camera page {} '.format(page))
             self.ScrapeImages(str(page))
-            self.logger.debug('DONE SCRAPING PAGE {} '.format(page))
+            self.logger.debug('DONE scraping camera page {} '.format(page))
             page += 1
         self.logger.info('DONE scraping all requested cameras.')
         self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
         if errors != 0:
-            self.logger.info('Failed to download images from {} cameras. Refer to the logs for details.'.format(errors))
+            self.logger.info('Failed to download images from {} cameras.'.format(errors))
 
     def loadingBar(self, current, max):
         """Loading bar graphix"""
@@ -391,7 +390,7 @@ class Insecrawl:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
             self.ScrapePages()
-        self.logger.info('Done')
+        self.logger.info('Process completed')
         sys.exit()
 
 
