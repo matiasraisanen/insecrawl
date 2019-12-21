@@ -11,14 +11,29 @@ from iso3166 import countries
 import logging
 from datetime import datetime
 import json
+import ctypes
+import io
+import tempfile
+from contextlib import contextmanager
 
 class Insecrawl:
 
     def __init__(self):
-
+        self.libc = ctypes.CDLL(None)
+        self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
+        
+        
+        # Logger setup  
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
-                            datefmt='%H:%M:%S', level=logging.INFO)
+                            datefmt='%H:%M:%S', level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
+        self.handler = logging.StreamHandler(sys.stdout)
+        self.handler.setLevel(logging.INFO)
+        formatter = logging.Formatter('[%(asctime)s]-[%(levelname)s]: %(message)s', datefmt='%H:%M:%S')
+        self.handler.setFormatter(formatter)
+        self.logger.addHandler(self.handler)
+
+
         self.dateTimeObj = datetime.now()
         self.printAmount = False
         self.printDetails = False
@@ -84,9 +99,33 @@ class Insecrawl:
                     'Could not resolve {} to a country.'.format(self.country))
                 sys.exit(self.raiseCritical())
         
-        
-        self.main()
+        f = io.StringIO()
+        with self.stderr_redirector(f):
+            self.main()
+        f.close
 
+    @contextmanager
+    def stderr_redirector(self, stream):
+        original_stderr_fd = sys.stderr.fileno()
+
+        def _redirect_stderr(to_fd):
+            self.libc.fflush(self.c_stderr)
+            sys.stderr.close()
+            os.dup2(to_fd, original_stderr_fd)
+            sys.stderr = io.TextIOWrapper(os.fdopen(original_stderr_fd, 'wb'))
+
+        saved_stderr_fd = os.dup(original_stderr_fd)
+        try:
+            tfile = tempfile.TemporaryFile(mode='w+b')
+            _redirect_stderr(tfile.fileno())
+            yield
+            _redirect_stderr(saved_stderr_fd)
+            tfile.flush()
+            tfile.seek(0, io.SEEK_SET)
+            stream.write(tfile.read().decode())
+        finally:
+            tfile.close()
+            os.close(saved_stderr_fd)
     def GetCountriesJSON(self):
         """Fetch a JSON of country codes, countries and camera count"""
         try:
@@ -322,7 +361,8 @@ class Insecrawl:
 
     def main(self):
         if self.verboseLogging:
-            self.logger.setLevel(logging.DEBUG)
+            self.handler.setLevel(logging.DEBUG)
+            # self.logger.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
         if self.printDetails:
