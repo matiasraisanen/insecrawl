@@ -5,31 +5,32 @@ import json
 import logging
 import os
 import re
-import requests
 import sys
 import tempfile
 import urllib
 from contextlib import contextmanager
 from datetime import datetime
-from urllib.request import urlopen, Request
+from urllib.request import Request, urlopen
 
 import cv2
 from bs4 import BeautifulSoup
 from iso3166 import countries
+
 
 class Insecrawl:
 
     def __init__(self):
         self.libc = ctypes.CDLL(None)
         self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
-        
-        # Logger setup  
+
+        # Logger setup
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
                             datefmt='%H:%M:%S', level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
         self.handler = logging.StreamHandler(sys.stdout)
         self.handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('[%(asctime)s]-[%(levelname)s]: %(message)s', datefmt='%H:%M:%S')
+        formatter = logging.Formatter(
+            '[%(asctime)s]-[%(levelname)s]: %(message)s', datefmt='%H:%M:%S')
         self.handler.setFormatter(formatter)
         self.logger.addHandler(self.handler)
         # Logger setup finished
@@ -98,7 +99,7 @@ class Insecrawl:
                 self.logger.error(
                     'Could not resolve {} to a country.'.format(self.country))
                 sys.exit(self.raiseCritical())
-        
+
         f = io.StringIO()
         with self.stderr_redirector(f):
             self.main()
@@ -126,6 +127,7 @@ class Insecrawl:
         finally:
             tfile.close()
             os.close(saved_stderr_fd)
+
     def GetCountriesJSON(self):
         """Fetch a JSON of country codes, countries and camera count"""
         try:
@@ -137,7 +139,7 @@ class Insecrawl:
             self.countriesJSON = countriesjson['countries']
         except:
             self.logger.error("Could not fetch countries JSON from insecam")
-        
+
     def printCameraCount(self):
         self.GetCountriesJSON()
         for key in sorted(self.countriesJSON.keys()):
@@ -149,7 +151,7 @@ class Insecrawl:
         """Prints a manual page."""
         fileHandler = open("help.txt", "r")
         file_contents = fileHandler.read()
-        print (file_contents)
+        print(file_contents)
         fileHandler.close()
         sys.exit()
 
@@ -157,11 +159,10 @@ class Insecrawl:
         self.logger.critical(
             'Program encountered a critical error and must quit.')
 
-
     def createDir(self, dirName):
         """Create directory for images."""
         try:
-            os.makedirs(dirName)    
+            os.makedirs(dirName)
             self.logger.debug("Created directory {}".format(dirName))
         except FileExistsError:
             pass
@@ -202,11 +203,13 @@ class Insecrawl:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
             for link in soup.find_all('a'):
-                matchCountry = re.search(r'\/en\/bycountry\/(\w+)\/', str(link))
+                matchCountry = re.search(
+                    r'\/en\/bycountry\/(\w+)\/', str(link))
                 if matchCountry:
                     self.cameraDetails['countryCode'] = matchCountry.group(1)
                     self.cameraDetails['country'] = link.get_text()
-                matchManufacturer = re.search(r'\/en\/bytype\/(\w+)\/', str(link))
+                matchManufacturer = re.search(
+                    r'\/en\/bytype\/(\w+)\/', str(link))
                 if matchManufacturer:
                     self.cameraDetails['manufacturer'] = link.get_text()
             for script in soup.find_all('script'):
@@ -218,10 +221,11 @@ class Insecrawl:
                 if img.get('id') == "image0":
                     if img.get('src') == "/static/no.jpg":
                         self.cameraDetails['directURL'] = "NOT FOUND"
-                    
+
                     else:
                         url = urllib.parse.urlparse(img.get('src'))
-                        self.cameraDetails['directURL'] = "http://{}".format(url.netloc)
+                        self.cameraDetails['directURL'] = "http://{}".format(
+                            url.netloc)
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
@@ -231,31 +235,34 @@ class Insecrawl:
         timestampStr = ""
         if self.timeStamp:
             timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
-        cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder, cameraID,timestampStr), image)
+        cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder,
+                                         cameraID, timestampStr), image)
         self.logger.debug(
-                            'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
+            'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
 
     def DownloadCustomURL(self):
         """Download a still frame from a custom URL."""
         if self.customIdentifier:
             cameraID = self.customIdentifier
         else:
-            self.logger.error('You must provide a custom identifier string (used for filename) for the camera by using -i or --identifier')
+            self.logger.error(
+                'You must provide a custom identifier string (used for filename) for the camera by using -i or --identifier')
             sys.exit(self.raiseCritical())
-            
+
         try:
-            
-            self.logger.debug('START processing camera ID {}'.format(self.customURL))
+
+            self.logger.debug(
+                'START processing camera ID {}'.format(self.customURL))
             self.logger.debug('Image URL: {}'.format(self.customURL))
             vidObj = cv2.VideoCapture(self.customURL)
             success, image = vidObj.read()
             if success:
                 self.WriteImage(cameraID, image)
-            self.logger.debug('DONE processing camera ID {}'.format(self.customURL))
+            self.logger.debug(
+                'DONE processing camera ID {}'.format(self.customURL))
 
         except:
             self.logger.error('Could not download image')
-
 
     def ScrapeOne(self, cameraID):
         """Scrape image from one camera"""
@@ -277,14 +284,15 @@ class Insecrawl:
             for img in soup.findAll('img'):
                 if img.get('id') == "image0":
                     self.logger.debug('START processing {}'.format(cameraID))
-                    image_url = img.get('src')                    
+                    image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
                     # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
                     vidObj = cv2.VideoCapture(image_url)
                     success, image = vidObj.read()
                     if success:
                         self.WriteImage(cameraName, image)
-                    self.logger.debug('DONE processing camera ID {}'.format(cameraID))
+                    self.logger.debug(
+                        'DONE processing camera ID {}'.format(cameraID))
 
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
@@ -322,7 +330,8 @@ class Insecrawl:
                 if success:
                     self.WriteImage(image_id, image)
                     self.successfulScrapes += 1
-                self.logger.debug('DONE processing camera ID {}'.format(image_id))
+                self.logger.debug(
+                    'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
@@ -339,10 +348,12 @@ class Insecrawl:
             self.logger.debug('DONE scraping camera page {} '.format(page))
             page += 1
         self.logger.info('DONE scraping all requested cameras.')
-        self.logger.info('Successfully downloaded a total of {} images.'.format(self.successfulScrapes))
+        self.logger.info('Successfully downloaded a total of {} images.'.format(
+            self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
         if errors != 0:
-            self.logger.info('Failed to download images from {} cameras.'.format(errors))
+            self.logger.info(
+                'Failed to download images from {} cameras.'.format(errors))
 
     def loadingBar(self, current, max):
         """Loading bar graphix"""
@@ -352,8 +363,10 @@ class Insecrawl:
             doneText = " Done!\n"
         loadedBars = "█" * int(percent/5)
         notLoadedBars = "▒" * (20 - int(percent/5))
-        loadText = "Progress: " + loadedBars + notLoadedBars + " " + str("%.2f" % percent)+ "% " + "("+str(current)+"/"+str(max)+")" + doneText
-        print (loadText, end="\r")
+        loadText = "Progress: " + loadedBars + notLoadedBars + " " + \
+            str("%.2f" % percent) + "% " + \
+            "("+str(current)+"/"+str(max)+")" + doneText
+        print(loadText, end="\r")
 
     def main(self):
         if self.verboseLogging:
@@ -369,13 +382,15 @@ class Insecrawl:
                     tags = tags + ", "
 
             print("Camera ID: {}".format(self.cameraDetails['id']))
-            print("Manufacturer: {}".format(self.cameraDetails['manufacturer']))
+            print("Manufacturer: {}".format(
+                self.cameraDetails['manufacturer']))
             print("Country: {}".format(self.cameraDetails['country']))
             print("Country code: {}".format(self.cameraDetails['countryCode']))
             print("Tags: {}".format(tags))
             print("URL on insecam.org : {}".format(
                 self.cameraDetails['insecamURL']))
-            print("Direct URL to camera: {}".format(self.cameraDetails['directURL']))
+            print("Direct URL to camera: {}".format(
+                self.cameraDetails['directURL']))
 
         if self.oneCamera:
             self.GetDetails()
