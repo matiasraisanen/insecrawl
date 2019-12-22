@@ -100,7 +100,7 @@ class Insecrawl:
                     'Could not resolve {} to a country.'.format(self.country))
                 sys.exit(self.raiseCritical())
 
-        # Wrap main function in sdterr_redirector to suppress those pesky ffmpeg errors.
+        # Wrap main function in stderr_redirector to suppress those pesky ffmpeg errors.
         # Downside: stderr will not be visible on screen.
         f = io.StringIO()
         with self.stderr_redirector(f):
