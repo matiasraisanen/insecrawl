@@ -253,6 +253,7 @@ class Insecrawl:
         if not success:
             self.erroredScrapes += 1
             self.logger.error("Failed to scrape camera ID {}".format(cameraID))
+        self.progressCounter += 1
 
     def DownloadCustomURL(self):
         """Download a still frame from a user provided URL."""
@@ -330,7 +331,6 @@ class Insecrawl:
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
                 self.loadingBar(self.progressCounter, self.amountOfCameras)
-                self.progressCounter += 1
                 self.WriteImage(image_id, image_url)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
