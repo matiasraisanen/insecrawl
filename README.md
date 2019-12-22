@@ -8,6 +8,11 @@ Downloads still frames from IP cameras listed on [insecam.org](https://www.insec
 
 Uses OpenCV to scrape stills off of the IP camera live streams.
 
+Downloaded images will be saved in **./images** by default.
+
+Camera IDs are those found on insecam.org.  
+i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
+
 **DISCLAIMER:**  
 **I am in no way affiliated with insecam. I just wanted to have an easier way of browsing cameras on the site.**
 
@@ -55,11 +60,6 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 ```
 
 ---
-
-Downloaded images will be saved in **./images** by default.
-
-Camera IDs are those found on insecam.org.  
-i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 ## Arguments
 
