@@ -161,6 +161,7 @@ class Insecrawl:
         sys.exit()
 
     def raiseCritical(self):
+        """Logs a uniform critical error. Wrap in sys.exit() to have a fancy critical exit"""
         self.logger.critical(
             'Program encountered a critical error and must quit.')
 
@@ -173,7 +174,7 @@ class Insecrawl:
             pass
 
     def GetMaxPageNum(self):
-        """Returns maximum number of camera pages for a certain country"""
+        """Returns maximum number of camera pages for a certain country."""
         try:
             url = 'https://www.insecam.org/en/bycountry/{}/'.format(
                 self.country)
@@ -246,7 +247,7 @@ class Insecrawl:
             'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
 
     def DownloadCustomURL(self):
-        """Download a still frame from a custom URL."""
+        """Download a still frame from a user provided URL."""
         if self.customIdentifier:
             cameraID = self.customIdentifier
         else:
@@ -296,7 +297,7 @@ class Insecrawl:
                         'START processing camera ID {}'.format(cameraID))
                     image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
-                    # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
+                    # Errors from cv2 are printed to stderr, which has been suppressed in the class constructor method
                     vidObj = cv2.VideoCapture(image_url)
                     success, image = vidObj.read()
                     if success:
@@ -334,7 +335,7 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
+                # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
                 self.loadingBar(self.progressCounter, self.amountOfCameras)
                 vidObj = cv2.VideoCapture(image_url)
                 self.progressCounter += 1
