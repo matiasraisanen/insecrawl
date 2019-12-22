@@ -235,22 +235,28 @@ class Insecrawl:
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
-    def WriteImage(self, cameraID, image):
-        """Write image to disk"""
-        timestampStr = ""
-        if self.timeStamp:
-            dateTimeObj = datetime.now()
-            timestampStr = dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
-        cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder,
-                                         cameraID, timestampStr), image)
-        self.logger.debug(
-            'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
+    def WriteImage(self, cameraID, cameraURL):
+        """Capture still from camera, and write image to disk"""
+        # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
+        vidObj = cv2.VideoCapture(cameraURL)
+        success, image = vidObj.read()
+        if success:
+            self.successfulScrapes += 1
+            timestampStr = ""
+            if self.timeStamp:
+                dateTimeObj = datetime.now()
+                timestampStr = dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
+            cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder,
+                                             cameraID, timestampStr), image)
+            self.logger.debug(
+                'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
+        if not success:
+            self.erroredScrapes += 1
+            self.logger.error("Failed to scrape camera ID {}".format(cameraID))
 
     def DownloadCustomURL(self):
         """Download a still frame from a user provided URL."""
-        if self.customIdentifier:
-            cameraID = self.customIdentifier
-        else:
+        if not self.customIdentifier:
             self.logger.error(
                 'You must provide a custom identifier string (used for filename) for the camera by using -i or --identifier')
             sys.exit(self.raiseCritical())
@@ -260,13 +266,7 @@ class Insecrawl:
             self.logger.debug(
                 'START processing camera ID {}'.format(self.customURL))
             self.logger.debug('Image URL: {}'.format(self.customURL))
-            vidObj = cv2.VideoCapture(self.customURL)
-            success, image = vidObj.read()
-            if success:
-                self.WriteImage(cameraID, image)
-            if not success:
-                self.logger.error(
-                    "Failed to scrape camera ID {}".format(cameraID))
+            self.WriteImage(self.customIdentifier, self.customURL)
             self.logger.debug(
                 'DONE processing camera ID {}'.format(self.customURL))
 
@@ -297,13 +297,7 @@ class Insecrawl:
                         'START processing camera ID {}'.format(cameraID))
                     image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
-                    # Errors from cv2 are printed to stderr, which has been suppressed in the class constructor method
-                    vidObj = cv2.VideoCapture(image_url)
-                    success, image = vidObj.read()
-                    if success:
-                        self.WriteImage(cameraName, image)
-                    if not success:
-                        self.logger.error("Failed to scrape camera")
+                    self.WriteImage(cameraName, image_url)
                     self.logger.debug(
                         'DONE processing camera ID {}'.format(cameraID))
 
@@ -335,17 +329,9 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
                 self.loadingBar(self.progressCounter, self.amountOfCameras)
-                vidObj = cv2.VideoCapture(image_url)
                 self.progressCounter += 1
-                success, image = vidObj.read()
-                if success:
-                    self.WriteImage(image_id, image)
-                    self.successfulScrapes += 1
-                if not success:
-                    self.logger.error(
-                        "Failed to scrape camera ID {}".format(image_id))
+                self.WriteImage(image_id, image_url)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
@@ -366,10 +352,9 @@ class Insecrawl:
         self.logger.info('DONE scraping all requested cameras.')
         self.logger.info('Successfully downloaded a total of {} images.'.format(
             self.successfulScrapes))
-        errors = self.amountOfCameras - self.successfulScrapes
-        if errors > 0:
+        if self.erroredScrapes > 0:
             self.logger.info(
-                'Failed to download images from {} cameras.'.format(errors))
+                'Failed to download images from {} cameras.'.format(self.erroredScrapes))
 
     def loadingBar(self, current, max):
         """Loading bar graphix"""
