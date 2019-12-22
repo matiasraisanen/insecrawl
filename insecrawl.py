@@ -102,7 +102,7 @@ class Insecrawl:
 
         f = io.StringIO()
         with self.stderr_redirector(f):
-            self.main()
+        self.main()
         f.close
 
     @contextmanager
@@ -142,10 +142,13 @@ class Insecrawl:
 
     def printCameraCount(self):
         self.GetCountriesJSON()
+        print("[CODE]- [CAMS] - COUNTRY NAME")
         for key in sorted(self.countriesJSON.keys()):
             value = self.countriesJSON[key]
-            print("[{}] {} has {} cameras".format(
-                key, value['country'], value['count']))
+            cameraQuantity = str(value['count']).rjust(4, " ")
+            countryCode = key.rjust(2, " ")
+            print(" [{}] - [{}] - {}".format(
+                countryCode, cameraQuantity, value['country']))
 
     def printHelp(self):
         """Prints a manual page."""
@@ -258,6 +261,9 @@ class Insecrawl:
             success, image = vidObj.read()
             if success:
                 self.WriteImage(cameraID, image)
+            if not success:
+                self.logger.error(
+                    "Failed to scrape camera ID {}".format(cameraID))
             self.logger.debug(
                 'DONE processing camera ID {}'.format(self.customURL))
 
@@ -283,7 +289,8 @@ class Insecrawl:
             soup = BeautifulSoup(html, features="html.parser")
             for img in soup.findAll('img'):
                 if img.get('id') == "image0":
-                    self.logger.debug('START processing {}'.format(cameraID))
+                    self.logger.debug(
+                        'START processing camera ID {}'.format(cameraID))
                     image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
                     # Errors from cv2 are printed to stderr, which has been suppressed in commit 6c558cb
@@ -291,6 +298,8 @@ class Insecrawl:
                     success, image = vidObj.read()
                     if success:
                         self.WriteImage(cameraName, image)
+                    if not success:
+                        self.logger.error("Failed to scrape camera")
                     self.logger.debug(
                         'DONE processing camera ID {}'.format(cameraID))
 
@@ -330,6 +339,9 @@ class Insecrawl:
                 if success:
                     self.WriteImage(image_id, image)
                     self.successfulScrapes += 1
+                if not success:
+                    self.logger.error(
+                        "Failed to scrape camera ID {}".format(image_id))
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
@@ -351,7 +363,7 @@ class Insecrawl:
         self.logger.info('Successfully downloaded a total of {} images.'.format(
             self.successfulScrapes))
         errors = self.amountOfCameras - self.successfulScrapes
-        if errors <= 0:
+        if errors > 0:
             self.logger.info(
                 'Failed to download images from {} cameras.'.format(errors))
 
