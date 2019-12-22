@@ -35,7 +35,6 @@ class Insecrawl:
         self.logger.addHandler(self.handler)
         # Logger setup finished
 
-        self.dateTimeObj = datetime.now()
         self.printAmount = False
         self.printDetails = False
         self.oneCamera = False
@@ -240,7 +239,8 @@ class Insecrawl:
         """Write image to disk"""
         timestampStr = ""
         if self.timeStamp:
-            timestampStr = self.dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
+            dateTimeObj = datetime.now()
+            timestampStr = dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
         cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder,
                                          cameraID, timestampStr), image)
         self.logger.debug(
