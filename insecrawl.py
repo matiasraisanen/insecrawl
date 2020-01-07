@@ -90,8 +90,11 @@ class Insecrawl:
 
         if self.country:
             try:
-                self.countryDetails = countries.get(self.country)
-                self.countryName = self.countryDetails.name
+                if self.country == "-":
+                    self.countryName = "[UNKNOWN_LOCATION]"
+                else:
+                    self.countryDetails = countries.get(self.country)
+                    self.countryName = self.countryDetails.name
                 self.maxPages = self.GetMaxPageNum()
                 self.GetCountriesJSON()
             except:
@@ -146,14 +149,23 @@ class Insecrawl:
             self.logger.error("Could not fetch countries JSON from insecam")
 
     def printCameraCount(self):
+        countriesTotalAmount = 0
+        camerasTotalAmount = 0
         self.GetCountriesJSON()
         print("[CODE]- [CAMS] - COUNTRY NAME")
         for key in sorted(self.countriesJSON.keys()):
-            value = self.countriesJSON[key]
-            cameraQuantity = str(value['count']).rjust(4, " ")
+            JSONItem = self.countriesJSON[key]
+            countryName = JSONItem['country']
+            if countryName == "-":
+                countryName = "Location unknown"
+            cameraQuantity = str(JSONItem['count']).rjust(4, " ")
             countryCode = key.rjust(2, " ")
+            camerasTotalAmount = camerasTotalAmount + JSONItem['count']
+            countriesTotalAmount += 1
             print(" [{}] - [{}] - {}".format(
-                countryCode, cameraQuantity, value['country']))
+                countryCode, cameraQuantity, countryName))
+        self.logger.info("Found a total of {} cameras from {} countries on insecam.org".format(
+            camerasTotalAmount, countriesTotalAmount))
 
     def printHelp(self):
         """Prints a manual page."""
