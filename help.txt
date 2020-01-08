@@ -1,7 +1,7 @@
 
 ╔══════════════════════╗ 
 ║       InseCrawl      ║ By: Matias Raisanen 2019
-╚══════════════════════╝     http://matiasraisanen.com
+╚══════════════════════╝     http://www.matiasraisanen.com
 
 Insecam crawler. Downloads still frames from IP cameras listed on insecam.org
 
