@@ -2,15 +2,15 @@
 
 ![Python3.7](https://img.shields.io/badge/python-3.7-green)
 
-Insecam Crawler
+As the name suggests, Insecrawl is a crawler for [insecam.org](https://www.insecam.org/). Its purpose is to download still frames from cameras listed on said website.
 
-Downloads still frames from IP cameras listed on [insecam.org](https://www.insecam.org/)
+With just one command you can download camera stills from each camera of a given country, and by chaining commands you could basically scrape all cameras on the website.
 
-Uses OpenCV to scrape stills off of the IP camera live streams.
+The script is automated, so the user can just issue a command, go make a sandwich, and come back to a folder full of stills from interesting cameras.
 
 Downloaded images will be saved in **./images** by default.
 
-Camera IDs are those found on insecam.org.  
+Camera IDs are those listed on insecam.org.  
 i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 **DISCLAIMER:**  
@@ -97,19 +97,10 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 -v, --verbose       Debug level logging
 ```
 
-## Project structure
+---
 
-```
-.
-├── help.txt            # Manual page / help text
-├── images              # Downloaded images go here. Contents ignored by github.
-├── insecrawl.py        # Main program
-├── LICENSE             # License file
-└── README.md           # This file
-```
+## 3rd party dependencies
 
-## Dependencies
-
-```
-$ pip3 install bs4 iso3166
-```
+- [opencv-python](https://pypi.org/project/opencv-python/)
+- [beautifulsoup4](https://pypi.org/project/beautifulsoup4/)
+- [iso3166](https://pypi.org/project/iso3166/)
