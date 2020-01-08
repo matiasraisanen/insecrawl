@@ -16,43 +16,44 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 **DISCLAIMER:**  
 **I am in no way affiliated with insecam. I just wanted to have an easier way of browsing cameras on the site.**
 
-## Run
+---
 
-Run the program simply like so:
+## How to use
+
+Run the program simply like so
 
 ```
 $ python3 insecrawl.py -c [COUNTRYCODE]
 ```
 
----
-
-**Example-1:** List all countries, their 2-letter code and how many cameras they each have:
-
-```
-$ python3 insecrawl.py -C
-```
+This will download a still frame from each camera located in the designated country.
 
 ---
 
-**Example-2:** Scrape all images for cameras located in Finland, and print verbose logs to stdout:
+## Examples
+
+**Example-1:**  
+List all countries, their two-letter code and how many cameras they each have
 
 ```
-$ python3 insecrawl.py -c FI -v
+$ python3 insecrawl.py --countryList
 ```
 
 ---
 
-**Example-3:** Download a still image of camera ID 241666, and append timestamp to filename
+**Example-2:**  
+Scrape images from every camera located in Finland. Save images into **./images/finland**
 
 ```
-$ python3 insecrawl.py -o 241666 -t
+$ python3 insecrawl.py -c FI -f images/finland
 ```
 
 ---
 
-You can also combine terminal commands to your liking:
+**Example-3:**  
+You can also combine terminal commands to your liking.
 
-**Example-4:** Scrape camera ID 241666 every 900 seconds (15 minutes).
+Scrape camera ID 241666 every 900 seconds.
 Save images into **./images/214666_timelapse** and use timestamps in filenames. Great way to create frames for timelapse videos.
 
 ```
