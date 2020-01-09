@@ -4,7 +4,7 @@
 
 As the name suggests, Insecrawl is a crawler for [insecam.org](https://www.insecam.org/). Its purpose is to download still frames from cameras listed on said website.
 
-With just one command you can download camera stills from each camera of a given country, and by chaining commands you could basically scrape all cameras on the website.
+The script can scrape an image from a single camera, all cameras in a certain country, or just simply every camera found on the site.
 
 The script is automated, so the user can just issue a command, go make a sandwich, and come back to a folder full of stills from interesting cameras.
 
@@ -51,6 +51,16 @@ $ python3 insecrawl.py -c FI -f images/finland
 ---
 
 **Example-3:**  
+Scrape images from every camera listed on insecam, and save them in **./images/{COUNTRY_NAME}**  
+This can take hours to complete, however.
+
+```
+$ python3 insecrawl.py --scrapeAllCameras --sortByCountry
+```
+
+---
+
+**Example-4:**  
 You can also combine terminal commands to your liking.
 
 Scrape camera ID 241666 every 900 seconds.
@@ -84,7 +94,8 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 
 -o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
 
---scrapeAllCameras  Downloads a still from every camera listed on insecam. This can take hours.
+--scrapeAllCameras  Downloads a still from every camera listed on insecam.
+                    This can take hours to complete.
 
 --sortByCountry     Images will be saved in **./images/{COUNTRY_NAME}** instead. Intended use in
                     conjuction with the option --scrapeAllCameras.
