@@ -97,7 +97,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 --scrapeAllCameras  Downloads a still from every camera listed on insecam.
                     This can take hours to complete.
 
---sortByCountry     Images will be saved in **./images/{COUNTRY_NAME}** instead. Intended use in
+--sortByCountry     Images will be saved in ./images/{COUNTRY_NAME} instead. Intended use in
                     conjuction with the option --scrapeAllCameras.
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
