@@ -1,11 +1,11 @@
 
 ╔══════════════════════╗ 
-║       InseCrawl      ║ By: Matias Raisanen 2019
+║       InseCrawl      ║ By: Matias Raisanen 2020
 ╚══════════════════════╝     http://www.matiasraisanen.com
 
 Insecam crawler. Downloads still frames from IP cameras listed on insecam.org
 
-ARGUMENTS
+OPTIONS
 ═════════
 
 -h, --help          Print this help page
@@ -18,23 +18,28 @@ ARGUMENTS
 
 -d, --details       Prints details for a given camera ID.
 
+-f, --folder        Provide a custom path for downloaded images. If not
+                    provided, images will be saved to the default
+                    folder ./images
+
+-i, --identifier    Provide a custom identifier for the camera, used as 
+                    filename for the saved image. Works only with -u and -o flags.
+
+-o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
+
+--scrapeAllCameras  Downloads a still from every camera listed on insecam. This can take hours.
+
+--sortByCountry     Images will be saved in **./images/{COUNTRY_NAME}** instead. Intended use in
+                    conjuction with the option --scrapeAllCameras.
+
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
                     format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
                     local time and a 24h clock.
 
--f, --folder        Provide a custom path for downloaded images. If not
-                    provided, images will be saved to the default
-                    folder ./images
-
--o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
-
 -u, --url           Provide a direct URL to a video stream to download a still frame 
                     from. Useful if the camera is no longer on insecam, but still 
                     has a publicly accessible web interface. Must be used in conjuction 
                     with -i or --identifier. 
-                
--i, --identifier    Provide a custom identifier for the camera, used as 
-                    filename for the saved image. Works only with -u and -o flags.
 
 -v, --verbose       Debug level logging

@@ -46,6 +46,8 @@ class Insecrawl:
         self.countriesJSON = False
         self.progressCounter = 0
         self.successfulScrapes = 0
+        self.scrapeAllCams = False
+        self.sortByCountry = False
         self.erroredScrapes = 0
         self.downloadFolder = "images"
         self.customURL = False
@@ -54,7 +56,7 @@ class Insecrawl:
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:Cd:o:f:u:i:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier="]
+                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -87,6 +89,10 @@ class Insecrawl:
                 self.downloadFolder = currentValue
             elif currentArgument in ("-i", "--identifier"):
                 self.customIdentifier = currentValue
+            elif currentArgument in ("--scrapeAllCameras"):
+                self.scrapeAllCams = True
+            elif currentArgument in ("--sortByCountry"):
+                self.sortByCountry = True
 
         if self.country:
             try:
@@ -95,7 +101,7 @@ class Insecrawl:
                 else:
                     self.countryDetails = countries.get(self.country)
                     self.countryName = self.countryDetails.name
-                self.maxPages = self.GetMaxPageNum()
+
                 self.GetCountriesJSON()
             except:
                 self.logger.error(
@@ -145,6 +151,8 @@ class Insecrawl:
             req = Request(url=url, headers=headers)
             countriesjson = json.loads(urlopen(req).read().decode())
             self.countriesJSON = countriesjson['countries']
+            if self.country:
+                self.amountOfCameras = countriesJSON[self.country]['count']
         except:
             self.logger.error("Could not fetch countries JSON from insecam")
 
@@ -321,6 +329,26 @@ class Insecrawl:
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
+    def ScrapeAllCameras(self):
+        totalCams = 0
+        totalCountries = 0
+        self.GetCountriesJSON()
+
+        for key in sorted(self.countriesJSON.keys()):
+            JSONItem = self.countriesJSON[key]
+            totalCams = totalCams + JSONItem['count']
+            totalCountries += 1
+        self.logger.info("Found {} cameras from {} countries. This could take a long time.".format(
+            totalCams, totalCountries))
+
+        for key in sorted(self.countriesJSON.keys()):
+            JSONItem = self.countriesJSON[key]
+            self.country = key
+            self.countryName = JSONItem['country']
+            self.amountOfCameras = totalCams
+            self.ScrapePages()
+        sys.exit()
+
     def ScrapeImages(self, page):
         """Save still images from a certain country and page number."""
         url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
@@ -356,21 +384,28 @@ class Insecrawl:
     def ScrapePages(self):
         """Scrape pages for a given country"""
         page = 1
-        self.amountOfCameras = self.countriesJSON[self.country]['count']
+        totalCamsOfCountry = self.countriesJSON[self.country]['count']
+        self.maxPages = self.GetMaxPageNum()
         self.logger.info(
-            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, self.amountOfCameras,))
+            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, totalCamsOfCountry))
+        if self.sortByCountry:
+            self.downloadFolder = "images/{}".format(self.countryName)
         self.createDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START scraping camera page {} '.format(page))
             self.ScrapeImages(str(page))
             self.logger.debug('DONE scraping camera page {} '.format(page))
             page += 1
-        self.logger.info('DONE scraping all requested cameras.')
-        self.logger.info('Successfully downloaded a total of {} images.'.format(
+        self.logger.info(
+            'Done scraping cameras in {}.'.format(self.countryName))
+        self.logger.info('Successfully downloaded {} images.'.format(
             self.successfulScrapes))
+        self.successfulScrapes = 0
+
         if self.erroredScrapes > 0:
             self.logger.info(
                 'Failed to download images from {} cameras.'.format(self.erroredScrapes))
+            self.erroredScrapes = 0
 
     def loadingBar(self, current, max):
         """Loading bar graphix"""
@@ -390,6 +425,8 @@ class Insecrawl:
             self.handler.setLevel(logging.DEBUG)
         if self.printAmount:
             self.printCameraCount()
+        if self.scrapeAllCams:
+            self.ScrapeAllCameras()
         if self.printDetails:
             self.GetDetails()
             tags = ""
