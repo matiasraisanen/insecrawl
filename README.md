@@ -2,7 +2,7 @@
 
 ![Python3.7](https://img.shields.io/badge/python-3.7-green)
 
-As the name suggests, Insecrawl is a crawler for [insecam.org](https://www.insecam.org/). Its purpose is to download still frames from cameras listed on said website.
+Insecrawl is a crawler for [insecam.org](https://www.insecam.org/). Its purpose is to download still frames from cameras listed on said website.
 
 The script can scrape an image from a single camera, all cameras in a certain country, or just simply every camera found on the site.
 
