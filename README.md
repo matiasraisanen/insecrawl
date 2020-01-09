@@ -23,7 +23,7 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 Run the program simply like so
 
 ```
-$ python3 insecrawl.py -c [COUNTRYCODE]
+$ python3 insecrawl.py -c {COUNTRY_CODE}
 ```
 
 This will download a still frame from each camera located in the designated country.
