@@ -35,24 +35,24 @@ class Insecrawl:
         self.logger.addHandler(self.handler)
         # Logger setup finished
 
-        self.printAmount = False
-        self.printDetails = False
-        self.oneCamera = False
-        self.verboseLogging = False
-        self.country = False
-        self.timeStamp = False
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
                               'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
         self.countriesJSON = False
+        self.country = False
+        self.customIdentifier = False
+        self.customURL = False
+        self.downloadFolder = "images"
+        self.erroredScrapes = 0
+        self.oneCamera = False
+        self.printAmount = False
+        self.printDetails = False
         self.progressCounter = 0
-        self.successfulScrapes = 0
         self.scrapeAllCams = False
         self.sortByCountry = False
-        self.erroredScrapes = 0
-        self.downloadFolder = "images"
-        self.customURL = False
-        self.customIdentifier = False
         self.startTime = datetime.now()
+        self.successfulScrapes = 0
+        self.timeStamp = False
+        self.verboseLogging = False
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:"
@@ -98,7 +98,7 @@ class Insecrawl:
         if self.country:
             try:
                 if self.country == "-":
-                    self.countryName = "[UNKNOWN_LOCATION]"
+                    self.countryName = "Unknown location"
                 else:
                     countryDetails = countries.get(self.country)
                     self.countryName = countryDetails.name
@@ -152,6 +152,7 @@ class Insecrawl:
             req = Request(url=url, headers=headers)
             countriesjson = json.loads(urlopen(req).read().decode())
             self.countriesJSON = countriesjson['countries']
+            self.countriesJSON['-']['country'] = "Unknown location"
             if self.country:
                 self.amountOfCameras = self.countriesJSON[self.country]['count']
         except:
@@ -165,8 +166,6 @@ class Insecrawl:
         for key in sorted(self.countriesJSON.keys()):
             JSONItem = self.countriesJSON[key]
             countryName = JSONItem['country']
-            if countryName == "-":
-                countryName = "Location unknown"
             cameraQuantity = str(JSONItem['count']).rjust(4, " ")
             countryCode = key.rjust(2, " ")
             camerasTotalAmount = camerasTotalAmount + JSONItem['count']
@@ -264,7 +263,7 @@ class Insecrawl:
         self.GetDetails()
         tags = ""
         if self.cameraDetails['country'] == False:
-            self.cameraDetails['country'] = "-"
+            self.cameraDetails['country'] = "Unknown location"
         if self.cameraDetails['countryCode'] == False:
             self.cameraDetails['countryCode'] = "-"
 
@@ -410,6 +409,8 @@ class Insecrawl:
         """Scrape pages for a given country"""
         page = 1
         totalCamsOfCountry = self.countriesJSON[self.country]['count']
+        if self.scrapeAllCams:
+            totalCamsOfCountry = self.amountOfCameras
         self.maxPages = self.GetMaxPageNum()
         self.logger.info(
             'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, totalCamsOfCountry))
