@@ -42,10 +42,10 @@ $ python3 insecrawl.py --countryList
 ---
 
 **Example-2:**  
-Scrape images from every camera located in Finland. Save images into **./images/finland**
+Scrape images from every camera located in Finland. Save images into **./images/Finland**
 
 ```
-$ python3 insecrawl.py -c FI -f images/finland
+$ python3 insecrawl.py -c FI -f images/Finland
 ```
 
 ---

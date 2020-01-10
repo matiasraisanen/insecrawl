@@ -27,11 +27,10 @@ OPTIONS
 
 -o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
 
---scrapeAllCameras  Downloads a still from every camera listed on insecam. 
-                    This can take hours to complete.
+--scrapeAllCameras  Downloads a still from every camera listed on insecam. This can 
+                    take hours to complete. Best used together with --sortByCountry
 
---sortByCountry     Images will be saved in ./images/{COUNTRY_NAME} instead. Intended 
-                    use in conjuction with the option --scrapeAllCameras.
+--sortByCountry     Images will be saved in ./images/{COUNTRY_NAME}
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
