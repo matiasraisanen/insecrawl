@@ -260,6 +260,30 @@ class Insecrawl:
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
+    def PrintDetails(self):
+        self.GetDetails()
+        tags = ""
+        if self.cameraDetails['country'] == False:
+            self.cameraDetails['country'] = "-"
+        if self.cameraDetails['countryCode'] == False:
+            self.cameraDetails['countryCode'] = "-"
+
+        for i in self.cameraDetails['tags']:
+            tags = tags + i
+            if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
+                tags = tags + ", "
+
+        print("Camera ID: {}".format(self.cameraDetails['id']))
+        print("Manufacturer: {}".format(
+            self.cameraDetails['manufacturer']))
+        print("Country: {}".format(self.cameraDetails['country']))
+        print("Country code: {}".format(self.cameraDetails['countryCode']))
+        print("Tags: {}".format(tags))
+        print("URL on insecam.org : {}".format(
+            self.cameraDetails['insecamURL']))
+        print("Direct URL to camera: {}".format(
+            self.cameraDetails['directURL']))
+
     def WriteImage(self, cameraID, cameraURL):
         """Capture still from camera, and write image to disk"""
         # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
@@ -453,24 +477,7 @@ class Insecrawl:
         if self.scrapeAllCams:
             self.ScrapeAllCameras()
         if self.printDetails:
-            self.GetDetails()
-            tags = ""
-            for i in self.cameraDetails['tags']:
-                tags = tags + i
-                if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
-                    tags = tags + ", "
-
-            print("Camera ID: {}".format(self.cameraDetails['id']))
-            print("Manufacturer: {}".format(
-                self.cameraDetails['manufacturer']))
-            print("Country: {}".format(self.cameraDetails['country']))
-            print("Country code: {}".format(self.cameraDetails['countryCode']))
-            print("Tags: {}".format(tags))
-            print("URL on insecam.org : {}".format(
-                self.cameraDetails['insecamURL']))
-            print("Direct URL to camera: {}".format(
-                self.cameraDetails['directURL']))
-
+            self.PrintDetails()
         if self.oneCamera:
             self.GetDetails()
             self.ScrapeOne(self.cameraDetails['id'])
