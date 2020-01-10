@@ -52,6 +52,7 @@ class Insecrawl:
         self.downloadFolder = "images"
         self.customURL = False
         self.customIdentifier = False
+        self.startTime = datetime.now()
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:Cd:o:f:u:i:"
@@ -99,8 +100,8 @@ class Insecrawl:
                 if self.country == "-":
                     self.countryName = "[UNKNOWN_LOCATION]"
                 else:
-                    self.countryDetails = countries.get(self.country)
-                    self.countryName = self.countryDetails.name
+                    countryDetails = countries.get(self.country)
+                    self.countryName = countryDetails.name
 
                 self.GetCountriesJSON()
             except:
@@ -152,7 +153,7 @@ class Insecrawl:
             countriesjson = json.loads(urlopen(req).read().decode())
             self.countriesJSON = countriesjson['countries']
             if self.country:
-                self.amountOfCameras = countriesJSON[self.country]['count']
+                self.amountOfCameras = self.countriesJSON[self.country]['count']
         except:
             self.logger.error("Could not fetch countries JSON from insecam")
 
@@ -349,7 +350,7 @@ class Insecrawl:
             self.ScrapePages()
         sys.exit()
 
-    def ScrapeImages(self, page):
+    def ScrapeImages(self, page, totalCams):
         """Save still images from a certain country and page number."""
         url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
             self.country, page)
@@ -374,7 +375,7 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                self.loadingBar(self.progressCounter, self.amountOfCameras)
+                self.loadingBar(self.progressCounter, totalCams)
                 self.WriteImage(image_id, image_url)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
@@ -393,7 +394,7 @@ class Insecrawl:
         self.createDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START scraping camera page {} '.format(page))
-            self.ScrapeImages(str(page))
+            self.ScrapeImages(str(page), totalCamsOfCountry)
             self.logger.debug('DONE scraping camera page {} '.format(page))
             page += 1
         self.logger.info(
@@ -419,6 +420,30 @@ class Insecrawl:
             str("%.2f" % percent) + "% " + \
             "("+str(current)+"/"+str(max)+")" + doneText
         print(loadText, end="\r")
+
+    def DeltaTime(self, tdelta):
+        """ Takes a timedelta object and formats it for humans. """
+        d = dict(days=tdelta.days)
+        d['hrs'], rem = divmod(tdelta.seconds, 3600)
+        d['min'], d['sec'] = divmod(rem, 60)
+
+        if d['min'] is 0:
+            fmt = '{sec}s'
+        elif d['hrs'] is 0:
+            fmt = '{min}m {sec}s'
+        elif d['days'] is 0:
+            fmt = '{hrs}h {min}m {sec}s'
+        else:
+            fmt = '{days}d {hrs}h {min}m {sec}s'
+
+        return fmt.format(**d)
+
+    def QuitProgram(self):
+        """ Uniform quit, with time elapsed"""
+
+        timeElapsed = self.DeltaTime(datetime.now() - self.startTime)
+        self.logger.info('Process completed in {}.'.format(timeElapsed))
+        sys.exit()
 
     def main(self):
         if self.verboseLogging:
@@ -455,8 +480,7 @@ class Insecrawl:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
             self.ScrapePages()
-        self.logger.info('Process completed')
-        sys.exit()
+        self.QuitProgram()
 
 
 if __name__ == '__main__':
