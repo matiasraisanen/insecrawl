@@ -13,7 +13,7 @@ OPTIONS
 -c, --country       Designate a country, and scrape stills from all cameras in 
                     that country. Provide a two letter country code (ISO 3166-1 alpha-2)
 
--C, --countryList   Prints all countries, country codes and camera amounts listed on
+-l, --listCountries Prints all countries, country codes and camera amounts listed on
                     insecam.org
 
 -d, --details       Prints details for a given camera ID.

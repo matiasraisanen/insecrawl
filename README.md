@@ -36,7 +36,7 @@ This will download a still frame from each camera located in the designated coun
 List all countries, their two-letter code and how many cameras they each have
 
 ```
-$ python3 insecrawl.py --countryList
+$ python3 insecrawl.py --listCountries
 ```
 
 ---
@@ -80,7 +80,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 -c, --country       Designate a country, and scrape stills from all cameras in
                     that country. Provide a two letter country code (ISO 3166-1 alpha-2)
 
--C, --countryList   Prints all countries, country codes and camera amounts listed on
+-l, --listCountries Prints all countries, country codes and camera amounts listed on
                     insecam.org
 
 -d, --details       Prints details for a given camera ID.

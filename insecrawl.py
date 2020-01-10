@@ -55,9 +55,9 @@ class Insecrawl:
         self.startTime = datetime.now()
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:Cd:o:f:u:i:"
+        unixOptions = "tvhc:ld:o:f:u:i:"
         gnuOptions = ["verbose", "help",
-                      "country=", "countryList", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry"]
+                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -74,7 +74,7 @@ class Insecrawl:
                 self.printHelp()
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
-            elif currentArgument in ("-C", "--countryList"):
+            elif currentArgument in ("-l", "--listCountries"):
                 self.printAmount = True
             elif currentArgument in ("-d", "--details"):
                 self.cameraDetails['id'] = currentValue
