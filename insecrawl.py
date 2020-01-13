@@ -162,16 +162,33 @@ class Insecrawl:
         countriesTotalAmount = 0
         camerasTotalAmount = 0
         self.GetCountriesJSON()
-        print("[CODE]- [CAMS] - COUNTRY NAME")
-        for key in sorted(self.countriesJSON.keys()):
-            JSONItem = self.countriesJSON[key]
-            countryName = JSONItem['country']
+        newList = {}
+        for key in self.countriesJSON.keys():
+            self.countriesJSON[key]['code'] = key
+            newList[self.countriesJSON[key]['country']] = self.countriesJSON[key]
+        # newList = sorted(newList)
+        # print(type(newList))
+        print("╔══════╦══════╦═══════════════════════════╗")
+        print("║ CODE ║ CAMS ║       COUNTRY NAME        ║")
+        print("╠══════╬══════╬═══════════════════════════╣")
+        for key in sorted(newList.keys()):
+            if key == "Unknown location":
+                continue
+            JSONItem = newList[key]
+            countryName = (JSONItem['country']).ljust(26, " ")
             cameraQuantity = str(JSONItem['count']).rjust(4, " ")
-            countryCode = key.rjust(2, " ")
+            countryCode = JSONItem['code'].rjust(2, " ")
             camerasTotalAmount = camerasTotalAmount + JSONItem['count']
             countriesTotalAmount += 1
-            print(" [{}] - [{}] - {}".format(
+            print("║  {}  ║ {} ║ {}║".format(
                 countryCode, cameraQuantity, countryName))
+        try:
+            count = str((newList['Unknown location']['count'])).rjust(4, " ")
+            print("║   {}  ║ {} ║ {}║".format(
+                newList['Unknown location']['code'], count, newList['Unknown location']['country'].ljust(26, " ") ))
+        except:
+            pass
+        print("╚══════╩══════╩═══════════════════════════╝")
         self.logger.info("Found a total of {} cameras from {} countries on insecam.org".format(
             camerasTotalAmount, countriesTotalAmount))
 
