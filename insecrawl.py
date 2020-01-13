@@ -166,10 +166,8 @@ class Insecrawl:
         for key in self.countriesJSON.keys():
             self.countriesJSON[key]['code'] = key
             newList[self.countriesJSON[key]['country']] = self.countriesJSON[key]
-        # newList = sorted(newList)
-        # print(type(newList))
         print("╔══════╦══════╦═══════════════════════════╗")
-        print("║ CODE ║ CAMS ║       COUNTRY NAME        ║")
+        print("║ CODE ║ CAMS ║          COUNTRY          ║")
         print("╠══════╬══════╬═══════════════════════════╣")
         for key in sorted(newList.keys()):
             if key == "Unknown location":
