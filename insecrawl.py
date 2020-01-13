@@ -71,7 +71,7 @@ class Insecrawl:
             if currentArgument in ("-v", "--verbose"):
                 self.verboseLogging = True
             elif currentArgument in ("-h", "--help"):
-                self.printHelp()
+                self.PrintHelp()
             elif currentArgument in ("-c", "--country"):
                 self.country = currentValue
             elif currentArgument in ("-l", "--listCountries"):
@@ -107,7 +107,7 @@ class Insecrawl:
             except:
                 self.logger.error(
                     'Could not resolve {} to a country.'.format(self.country))
-                sys.exit(self.raiseCritical())
+                sys.exit(self.RaiseCritical())
 
         if not self.verboseLogging:
             # Wrap main function in stderr_redirector to suppress those pesky ffmpeg errors.
@@ -158,7 +158,7 @@ class Insecrawl:
         except:
             self.logger.error("Could not fetch countries JSON from insecam")
 
-    def printCameraCount(self):
+    def PrintCameraCount(self):
         countriesTotalAmount = 0
         camerasTotalAmount = 0
         self.GetCountriesJSON()
@@ -175,7 +175,7 @@ class Insecrawl:
         self.logger.info("Found a total of {} cameras from {} countries on insecam.org".format(
             camerasTotalAmount, countriesTotalAmount))
 
-    def printHelp(self):
+    def PrintHelp(self):
         """Prints a manual page."""
         fileHandler = open("help.txt", "r")
         file_contents = fileHandler.read()
@@ -183,12 +183,12 @@ class Insecrawl:
         fileHandler.close()
         sys.exit()
 
-    def raiseCritical(self):
+    def RaiseCritical(self):
         """Logs a uniform critical error. Wrap in sys.exit() to have a fancy critical exit"""
         self.logger.critical(
             'Program encountered a critical error and must quit.')
 
-    def createDir(self, dirName):
+    def CreateDir(self, dirName):
         """Create directory for images."""
         try:
             os.makedirs(dirName)
@@ -217,7 +217,7 @@ class Insecrawl:
         except urllib.error.HTTPError:
             self.logger.error(
                 'Country code {} ({}) returned 404! Insecam has no cameras from this country'.format(self.country, self.countryName))
-            sys.exit(self.raiseCritical())
+            sys.exit(self.RaiseCritical())
 
     def GetDetails(self):
         """Get details for a camera"""
@@ -308,7 +308,7 @@ class Insecrawl:
         if not self.customIdentifier:
             self.logger.error(
                 'You must provide a custom identifier string (used for filename) for the camera by using -i or --identifier')
-            sys.exit(self.raiseCritical())
+            sys.exit(self.RaiseCritical())
 
         try:
 
@@ -327,7 +327,7 @@ class Insecrawl:
         url = 'https://www.insecam.org/en/view/{}/'.format(
             cameraID)
         self.cameraDetails['insecamURL'] = url
-        self.createDir(self.downloadFolder)
+        self.CreateDir(self.downloadFolder)
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'}
         req = Request(url=url, headers=headers)
@@ -398,7 +398,7 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                self.loadingBar(self.progressCounter, totalCams)
+                self.LoadingBar(self.progressCounter, totalCams)
                 self.WriteImage(image_id, image_url)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
@@ -416,7 +416,7 @@ class Insecrawl:
             'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, totalCamsOfCountry))
         if self.sortByCountry:
             self.downloadFolder = "images/{}".format(self.countryName)
-        self.createDir(self.downloadFolder)
+        self.CreateDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START scraping camera page {} '.format(page))
             self.ScrapeImages(str(page), totalCamsOfCountry)
@@ -433,7 +433,7 @@ class Insecrawl:
                 'Failed to download images from {} cameras.'.format(self.erroredScrapes))
             self.erroredScrapes = 0
 
-    def loadingBar(self, current, max):
+    def LoadingBar(self, current, max):
         """Loading bar graphix"""
         percent = (current / max) * 100
         doneText = ""
@@ -474,7 +474,7 @@ class Insecrawl:
         if self.verboseLogging:
             self.handler.setLevel(logging.DEBUG)
         if self.printAmount:
-            self.printCameraCount()
+            self.PrintCameraCount()
         if self.scrapeAllCams:
             self.ScrapeAllCameras()
         if self.printDetails:
