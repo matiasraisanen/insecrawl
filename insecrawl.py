@@ -286,17 +286,26 @@ class Insecrawl:
             tags = tags + i
             if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
                 tags = tags + ", "
-
-        print("Camera ID: {}".format(self.cameraDetails['id']))
-        print("Manufacturer: {}".format(
+        
+        id = self.cameraDetails['id']
+        print("╔═══════════════════════════════╗")
+        print("║ Details for camera ID {}  ║ ".format(id.ljust(6, " ")))
+        print("╠══════════════╦════════════════╝")
+        print("║ Manufacturer ╠═ {}".format(
             self.cameraDetails['manufacturer']))
-        print("Country: {}".format(self.cameraDetails['country']))
-        print("Country code: {}".format(self.cameraDetails['countryCode']))
-        print("Tags: {}".format(tags))
-        print("URL on insecam.org : {}".format(
+        print("╠══════════════╣")
+        print("║   Country    ╠═ {}".format(self.cameraDetails['country']))
+        print("╠══════════════╣")
+        print("║     Code     ╠═ {}".format(self.cameraDetails['countryCode']))
+        print("╠══════════════╣")
+        print("║     Tags     ╠═ {}".format(tags))
+        print("╠══════════════╣")
+        print("║ Insecam URL  ╠═ {}".format(
             self.cameraDetails['insecamURL']))
-        print("Direct URL to camera: {}".format(
+        print("╠══════════════╣")
+        print("║  Direct URL  ╠═ {}".format(
             self.cameraDetails['directURL']))
+        print("╚══════════════╝")
 
     def WriteImage(self, cameraID, cameraURL):
         """Capture still from camera, and write image to disk"""
