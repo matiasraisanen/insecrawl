@@ -49,6 +49,7 @@ class Insecrawl:
         self.printAmount = False
         self.printDetails = False
         self.progressCounter = 0
+        self.skippedImages = 0
         self.scrapeAllCams = False
         self.sortByCountry = False
         self.startTime = datetime.now()
@@ -327,6 +328,7 @@ class Insecrawl:
                                              cameraID, timestampStr), image)
             self.logger.debug(
                 'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
+            self.logger.info('Scraped image from camera ID {}'.format(cameraID))
         if not success:
             self.erroredScrapes += 1
             self.logger.error("Failed to scrape camera ID {}".format(cameraID))
@@ -427,13 +429,13 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                self.LoadingBar(self.progressCounter, totalCams)
+                
                 if self.newCamerasOnly:
                     if not self.ImageExists(image_id):
                         self.WriteImage(image_id, image_url)
                 elif not self.newCamerasOnly:
                     self.WriteImage(image_id, image_url)
-
+                self.LoadingBar(self.progressCounter, totalCams)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
@@ -458,19 +460,25 @@ class Insecrawl:
             page += 1
         self.logger.info(
             'Done scraping cameras in {}.'.format(self.countryName))
-        self.logger.info('Successfully downloaded {} images.'.format(
+        self.logger.info('Images downloaded: {}'.format(
             self.successfulScrapes))
         self.successfulScrapes = 0
 
+        if self.skippedImages > 0:
+            self.logger.info(
+                "Skipped cameras: {}".format(self.skippedImages))
+            self.skippedImages = 0
         if self.erroredScrapes > 0:
             self.logger.info(
-                'Failed to download images from {} cameras.'.format(self.erroredScrapes))
+                'Failed scrapes: {}'.format(self.erroredScrapes))
             self.erroredScrapes = 0
 
     def ImageExists(self, id):
         for name in glob.glob('{}/{}*'.format(self.downloadFolder, id)):
             if id in name:
+                self.logger.debug("Image from ID {} found on disk. Skipping".format(id))
                 self.progressCounter += 1
+                self.skippedImages += 1
                 return True
             else:
                 return False
