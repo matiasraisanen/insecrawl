@@ -1,5 +1,6 @@
 import ctypes
 import getopt
+import glob
 import io
 import json
 import logging
@@ -43,6 +44,7 @@ class Insecrawl:
         self.customURL = False
         self.downloadFolder = "images"
         self.erroredScrapes = 0
+        self.newCamerasOnly = False
         self.oneCamera = False
         self.printAmount = False
         self.printDetails = False
@@ -55,9 +57,9 @@ class Insecrawl:
         self.verboseLogging = False
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:ld:o:f:u:i:"
+        unixOptions = "tvhc:ld:o:f:u:i:n"
         gnuOptions = ["verbose", "help",
-                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry"]
+                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -94,6 +96,8 @@ class Insecrawl:
                 self.scrapeAllCams = True
             elif currentArgument in ("--sortByCountry"):
                 self.sortByCountry = True
+            elif currentArgument in ("-n", "--newCamsOnly"):
+                self.newCamerasOnly = True
 
         if self.country:
             try:
@@ -424,7 +428,12 @@ class Insecrawl:
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
                 self.LoadingBar(self.progressCounter, totalCams)
-                self.WriteImage(image_id, image_url)
+                if self.newCamerasOnly:
+                    if not self.ImageExists(image_id):
+                        self.WriteImage(image_id, image_url)
+                elif not self.newCamerasOnly:
+                    self.WriteImage(image_id, image_url)
+
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
@@ -457,6 +466,14 @@ class Insecrawl:
             self.logger.info(
                 'Failed to download images from {} cameras.'.format(self.erroredScrapes))
             self.erroredScrapes = 0
+
+    def ImageExists(self, id):
+        for name in glob.glob('{}/{}*'.format(self.downloadFolder, id)):
+            if id in name:
+                self.progressCounter += 1
+                return True
+            else:
+                return False
 
     def LoadingBar(self, current, max):
         """Loading bar graphix"""

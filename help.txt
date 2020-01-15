@@ -27,6 +27,8 @@ OPTIONS
 
 -o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
 
+-n, --newCamsOnly   Scrape only the cameras that do not have a still saved on disk.
+
 --scrapeAllCameras  Downloads a still from every camera listed on insecam. This can 
                     take hours to complete. Best used together with --sortByCountry
 

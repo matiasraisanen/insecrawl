@@ -92,6 +92,8 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 -i, --identifier    Provide a custom identifier for the camera, used as
                     filename for the saved image. Works only with -u and -o flags.
 
+-n, --newCamsOnly   Scrape only the cameras that do not have a still saved on disk.
+
 -o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
 
 --scrapeAllCameras  Downloads a still from every camera listed on insecam. This can
