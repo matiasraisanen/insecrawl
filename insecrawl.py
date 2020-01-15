@@ -290,20 +290,21 @@ class Insecrawl:
         id = self.cameraDetails['id']
         print("╔═══════════════════════════════╗")
         print("║ Details for camera ID {}  ║ ".format(id.ljust(6, " ")))
-        print("╠══════════════╦════════════════╝")
-        print("║ Manufacturer ╠═ {}".format(
+        print("╚══╤════════════════════════════╝")
+        print("╔══╧═══════════╗")
+        print("║ Manufacturer ╟╴ {}".format(
             self.cameraDetails['manufacturer']))
         print("╠══════════════╣")
-        print("║   Country    ╠═ {}".format(self.cameraDetails['country']))
+        print("║   Country    ╟╴ {}".format(self.cameraDetails['country']))
         print("╠══════════════╣")
-        print("║     Code     ╠═ {}".format(self.cameraDetails['countryCode']))
+        print("║     Code     ╟╴ {}".format(self.cameraDetails['countryCode']))
         print("╠══════════════╣")
-        print("║     Tags     ╠═ {}".format(tags))
+        print("║     Tags     ╟╴ {}".format(tags))
         print("╠══════════════╣")
-        print("║ Insecam URL  ╠═ {}".format(
+        print("║ Insecam URL  ╟╴ {}".format(
             self.cameraDetails['insecamURL']))
         print("╠══════════════╣")
-        print("║  Direct URL  ╠═ {}".format(
+        print("║  Direct URL  ╟╴ {}".format(
             self.cameraDetails['directURL']))
         print("╚══════════════╝")
 
