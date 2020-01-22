@@ -58,7 +58,7 @@ class Insecrawl:
         self.verboseLogging = False
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
-        unixOptions = "tvhc:ld:o:f:u:i:n"
+        unixOptions = "tvhc:ld:o:f:u:i:nS"
         gnuOptions = ["verbose", "help",
                       "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
 
@@ -90,25 +90,28 @@ class Insecrawl:
             elif currentArgument in ("-t", "--timeStamp"):
                 self.timeStamp = True
             elif currentArgument in ("-f", "--folder"):
-                self.downloadFolder = currentValue
+                self.downloadFolder = "images/{}".format(currentValue)
             elif currentArgument in ("-i", "--identifier"):
                 self.customIdentifier = currentValue
             elif currentArgument in ("--scrapeAllCameras"):
                 self.scrapeAllCams = True
-            elif currentArgument in ("--sortByCountry"):
+            elif currentArgument in ("-S", "--sortByCountry"):
                 self.sortByCountry = True
             elif currentArgument in ("-n", "--newCamsOnly"):
                 self.newCamerasOnly = True
+        if len(arguments) == 0:
+            print("No arguments given. Use -h for help.")
 
         if self.country:
+            self.GetCountriesJSON()
             try:
                 if self.country == "-":
                     self.countryName = "Unknown location"
                 else:
-                    countryDetails = countries.get(self.country)
-                    self.countryName = countryDetails.name
+                    # countryDetails = countries.get(self.country)
+                    # self.countryName = countryDetails.name
+                    self.countryName = self.countriesJSON[self.country]['country']
 
-                self.GetCountriesJSON()
             except:
                 self.logger.error(
                     'Could not resolve {} to a country.'.format(self.country))
