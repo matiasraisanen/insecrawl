@@ -85,9 +85,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 
 -d, --details       Prints details for a given camera ID.
 
--f, --folder        Provide a custom path for downloaded images. If not
-                    provided, images will be saved to the default
-                    folder ./images
+-f, --folder        Assign a custom download path under ./images folder.
 
 -i, --identifier    Provide a custom identifier for the camera, used as
                     filename for the saved image. Works only with -u and -o flags.
@@ -99,7 +97,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
 --scrapeAllCameras  Downloads a still from every camera listed on insecam. This can
                     take hours to complete. Best used together with --sortByCountry
 
---sortByCountry     Images will be saved in ./images/{COUNTRY_NAME}
+-S, --sortByCountry Images will be saved in ./images/{COUNTRY_NAME}
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
