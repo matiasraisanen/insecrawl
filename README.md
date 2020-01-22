@@ -26,7 +26,7 @@ Run the program simply like so
 $ python3 insecrawl.py -c {COUNTRY_CODE}
 ```
 
-This will download a still frame from each camera located in the designated country.
+This will download a still frame from each camera located in the designated country, and save them into **./images**
 
 ---
 
@@ -45,7 +45,7 @@ $ python3 insecrawl.py --listCountries
 Scrape images from every camera located in Finland. Save images into **./images/Finland**
 
 ```
-$ python3 insecrawl.py -c FI -f images/Finland
+$ python3 insecrawl.py -c FI -f Finland
 ```
 
 ---
@@ -67,7 +67,7 @@ Scrape camera ID 241666 every 900 seconds.
 Save images into **./images/214666_timelapse** and use timestamps in filenames. Great way to create frames for timelapse videos.
 
 ```
-$ watch -n 900 "python3 insecrawl.py -o 241666 -f images/241666_timelapse -t"
+$ watch -n 900 "python3 insecrawl.py -o 241666 -f 241666_timelapse -t"
 ```
 
 ---
