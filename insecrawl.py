@@ -37,7 +37,7 @@ class Insecrawl:
         # Logger setup finished
 
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
-                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
+        'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
         self.countriesJSON = False
         self.country = False
         self.customIdentifier = False
@@ -60,7 +60,7 @@ class Insecrawl:
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
         gnuOptions = ["verbose", "help",
-                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
+        "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -295,7 +295,11 @@ class Insecrawl:
             if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
                 tags = tags + ", "
         
-        id = self.cameraDetails['id']
+        if self.cameraDetails['id']:
+            id = self.cameraDetails['id']
+        else:
+            id = "???"
+        
         print("╔═══════════════════════════════╗")
         print("║ Details for camera ID {}  ║ ".format(id.ljust(6, " ")))
         print("╚══╤════════════════════════════╝")
@@ -316,7 +320,7 @@ class Insecrawl:
             self.cameraDetails['directURL']))
         print("╚══════════════╝")
 
-    def WriteImage(self, cameraID, cameraURL):
+    def WriteImage(self, cameraID, cameraURL, downloadFolder):
         """Capture still from camera, and write image to disk"""
         # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
         vidObj = cv2.VideoCapture(cameraURL)
@@ -327,10 +331,10 @@ class Insecrawl:
             if self.timeStamp:
                 dateTimeObj = datetime.now()
                 timestampStr = dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
-            cv2.imwrite('{}/{}{}.jpg'.format(self.downloadFolder,
+            cv2.imwrite('{}/{}{}.jpg'.format(downloadFolder,
                                              cameraID, timestampStr), image)
             self.logger.debug(
-                'Image saved to {}/{}{}.jpg'.format(self.downloadFolder, cameraID, timestampStr))
+                'Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
             self.logger.info('Scraped image from camera ID {}'.format(cameraID))
         if not success:
             self.erroredScrapes += 1
@@ -349,7 +353,7 @@ class Insecrawl:
             self.logger.debug(
                 'START processing camera ID {}'.format(self.customURL))
             self.logger.debug('Image URL: {}'.format(self.customURL))
-            self.WriteImage(self.customIdentifier, self.customURL)
+            self.WriteImage(self.customIdentifier, self.customURL, self.downloadFolder)
             self.logger.debug(
                 'DONE processing camera ID {}'.format(self.customURL))
 
@@ -380,7 +384,7 @@ class Insecrawl:
                         'START processing camera ID {}'.format(cameraID))
                     image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
-                    self.WriteImage(cameraName, image_url)
+                    self.WriteImage(cameraName, image_url, self.downloadFolder)
                     self.logger.debug(
                         'DONE processing camera ID {}'.format(cameraID))
 
@@ -404,7 +408,7 @@ class Insecrawl:
             self.country = key
             self.countryName = JSONItem['country']
             self.amountOfCameras = totalCams
-            self.ScrapePages()
+            self.ScrapePages(self.country, self.countryName)
         sys.exit()
 
     def ScrapeImages(self, page, totalCams):
@@ -435,26 +439,26 @@ class Insecrawl:
                 
                 if self.newCamerasOnly:
                     if not self.ImageExists(image_id):
-                        self.WriteImage(image_id, image_url)
+                        self.WriteImage(image_id, image_url, self.downloadFolder)
                 elif not self.newCamerasOnly:
-                    self.WriteImage(image_id, image_url)
+                    self.WriteImage(image_id, image_url, self.downloadFolder)
                 self.LoadingBar(self.progressCounter, totalCams)
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
-    def ScrapePages(self):
+    def ScrapePages(self, countryCode, countryName):
         """Scrape pages for a given country"""
         page = 1
-        totalCamsOfCountry = self.countriesJSON[self.country]['count']
+        totalCamsOfCountry = self.countriesJSON[countryCode]['count']
         if self.scrapeAllCams:
             totalCamsOfCountry = self.amountOfCameras
         self.maxPages = self.GetMaxPageNum()
         self.logger.info(
-            'Scraping images from cameras in {}, a total of {} cameras.'.format(self.countryName, totalCamsOfCountry))
+            'Scraping images from cameras in {}, a total of {} cameras.'.format(countryName, totalCamsOfCountry))
         if self.sortByCountry:
-            self.downloadFolder = "images/{}".format(self.countryName)
+            self.downloadFolder = "images/{}".format(countryName)
         self.CreateDir(self.downloadFolder)
         while page <= int(self.maxPages):
             self.logger.debug('START scraping camera page {} '.format(page))
@@ -462,7 +466,7 @@ class Insecrawl:
             self.logger.debug('DONE scraping camera page {} '.format(page))
             page += 1
         self.logger.info(
-            'Done scraping cameras in {}.'.format(self.countryName))
+            'Done scraping cameras in {}.'.format(countryName))
         self.logger.info('Images downloaded: {}'.format(
             self.successfulScrapes))
         self.successfulScrapes = 0
@@ -540,7 +544,7 @@ class Insecrawl:
         if self.country:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
-            self.ScrapePages()
+            self.ScrapePages(self.country, self.countryName)
         self.QuitProgram()
 
 
