@@ -12,15 +12,19 @@ import urllib
 from contextlib import contextmanager
 from datetime import datetime
 from urllib.request import Request, urlopen
-
+import time
 import cv2
 from bs4 import BeautifulSoup
 from iso3166 import countries
 
+import multiprocessing
+from multiprocessing import Pool, Queue
+from Counter import Counter
 
 class Insecrawl:
 
     def __init__(self):
+        self.downloadCounter = Counter()
         self.libc = ctypes.CDLL(None)
         self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
@@ -320,7 +324,7 @@ class Insecrawl:
             self.cameraDetails['directURL']))
         print("╚══════════════╝")
 
-    def WriteImage(self, cameraID, cameraURL, downloadFolder):
+    def WriteImage(self, cameraID, cameraURL, downloadFolder, totalCams):
         """Capture still from camera, and write image to disk"""
         # Errors from cv2 are printed to stderr, which has been suppressed in  the class constructor method
         vidObj = cv2.VideoCapture(cameraURL)
@@ -339,7 +343,10 @@ class Insecrawl:
         if not success:
             self.erroredScrapes += 1
             self.logger.error("Failed to scrape camera ID {}".format(cameraID))
-        self.progressCounter += 1
+        self.downloadCounter.increment()
+        self.LoadingBar(self.downloadCounter.value, totalCams)
+        
+        
 
     def DownloadCustomURL(self):
         """Download a still frame from a user provided URL."""
@@ -418,11 +425,11 @@ class Insecrawl:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
         req = Request(url=url, headers=headers)
-        self.LoadingBar(self.progressCounter, totalCams)
         try:
             html = urlopen(req).read()
             soup = BeautifulSoup(html, features="html.parser")
-            for img in soup.findAll('img'):
+            images = soup.findAll('img')
+            for img in images:
                 if img.get('id') is None:
                     continue
                 match = re.search(r'image(\d+)', img.get('id'))
@@ -441,10 +448,15 @@ class Insecrawl:
                     if not self.ImageExists(image_id):
                         self.WriteImage(image_id, image_url, self.downloadFolder)
                 elif not self.newCamerasOnly:
-                    self.WriteImage(image_id, image_url, self.downloadFolder)
-                self.LoadingBar(self.progressCounter, totalCams)
+                    # Process image scrapes in batches of six. (Number of cameras per wep page.)
+                    p = multiprocessing.Process(target=self.WriteImage, args=(image_id, image_url, self.downloadFolder, totalCams))
+                    self.progressCounter += 1
+                    jobs.append(p)
+                    p.daemon = True
+                    p.start()
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
+            p.join()
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
