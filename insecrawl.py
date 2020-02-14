@@ -361,7 +361,7 @@ class Insecrawl:
                 'START processing camera ID {}'.format(self.customURL))
             self.logger.debug('Image URL: {}'.format(self.customURL))
             self.WriteImage(self.customIdentifier,
-                            self.customURL, self.downloadFolder)
+                            self.customURL, self.downloadFolder, 1)
             self.logger.debug(
                 'DONE processing camera ID {}'.format(self.customURL))
 
