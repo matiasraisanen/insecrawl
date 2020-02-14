@@ -1,4 +1,6 @@
+from contextlib import contextmanager
 import ctypes
+from datetime import datetime
 import getopt
 import glob
 import io
@@ -10,10 +12,7 @@ import re
 import sys
 import tempfile
 import urllib
-from contextlib import contextmanager
-from datetime import datetime
 from urllib.request import Request, urlopen
-import time
 import cv2
 from bs4 import BeautifulSoup
 from iso3166 import countries
