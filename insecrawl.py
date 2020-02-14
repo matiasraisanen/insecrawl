@@ -4,6 +4,7 @@ import glob
 import io
 import json
 import logging
+import multiprocessing
 import os
 import re
 import sys
@@ -17,8 +18,6 @@ import cv2
 from bs4 import BeautifulSoup
 from iso3166 import countries
 
-import multiprocessing
-from multiprocessing import Pool, Queue
 from Counter import Counter
 
 
