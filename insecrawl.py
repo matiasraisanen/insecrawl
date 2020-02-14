@@ -21,10 +21,10 @@ import multiprocessing
 from multiprocessing import Pool, Queue
 from Counter import Counter
 
+
 class Insecrawl:
 
     def __init__(self):
-        self.downloadCounter = Counter()
         self.libc = ctypes.CDLL(None)
         self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
@@ -41,30 +41,30 @@ class Insecrawl:
         # Logger setup finished
 
         self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
-        'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
+                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
         self.countriesJSON = False
         self.country = False
         self.customIdentifier = False
         self.customURL = False
         self.downloadFolder = "images"
-        self.erroredScrapes = 0
+        self.erroredScrapes = Counter()
         self.newCamerasOnly = False
         self.oneCamera = False
         self.printAmount = False
         self.printDetails = False
-        self.progressCounter = 0
-        self.skippedImages = 0
+        self.progressCounter = Counter()
+        self.skippedImages = Counter()
         self.scrapeAllCams = False
         self.sortByCountry = False
         self.startTime = datetime.now()
-        self.successfulScrapes = 0
+        self.successfulScrapes = Counter()
         self.timeStamp = False
         self.verboseLogging = False
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
         gnuOptions = ["verbose", "help",
-        "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
+                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -177,7 +177,8 @@ class Insecrawl:
         newList = {}
         for key in self.countriesJSON.keys():
             self.countriesJSON[key]['code'] = key
-            newList[self.countriesJSON[key]['country']] = self.countriesJSON[key]
+            newList[self.countriesJSON[key]
+                    ['country']] = self.countriesJSON[key]
         print("╔══════╦══════╦═══════════════════════════╗")
         print("║ CODE ║ CAMS ║          COUNTRY          ║")
         print("╠══════╬══════╬═══════════════════════════╣")
@@ -195,7 +196,7 @@ class Insecrawl:
         try:
             count = str((newList['Unknown location']['count'])).rjust(4, " ")
             print("║   {}  ║ {} ║ {}║".format(
-                newList['Unknown location']['code'], count, newList['Unknown location']['country'].ljust(26, " ") ))
+                newList['Unknown location']['code'], count, newList['Unknown location']['country'].ljust(26, " ")))
         except:
             pass
         print("╚══════╩══════╩═══════════════════════════╝")
@@ -298,12 +299,12 @@ class Insecrawl:
             tags = tags + i
             if i != self.cameraDetails['tags'][len(self.cameraDetails['tags'])-1]:
                 tags = tags + ", "
-        
+
         if self.cameraDetails['id']:
             id = self.cameraDetails['id']
         else:
             id = "???"
-        
+
         print("╔═══════════════════════════════╗")
         print("║ Details for camera ID {}  ║ ".format(id.ljust(6, " ")))
         print("╚══╤════════════════════════════╝")
@@ -330,7 +331,7 @@ class Insecrawl:
         vidObj = cv2.VideoCapture(cameraURL)
         success, image = vidObj.read()
         if success:
-            self.successfulScrapes += 1
+            self.successfulScrapes.increment()
             timestampStr = ""
             if self.timeStamp:
                 dateTimeObj = datetime.now()
@@ -339,14 +340,13 @@ class Insecrawl:
                                              cameraID, timestampStr), image)
             self.logger.debug(
                 'Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
-            self.logger.info('Scraped image from camera ID {}'.format(cameraID))
+            self.logger.info(
+                'Scraped image from camera ID {}'.format(cameraID))
         if not success:
-            self.erroredScrapes += 1
+            self.erroredScrapes.increment()
             self.logger.error("Failed to scrape camera ID {}".format(cameraID))
-        self.downloadCounter.increment()
-        self.LoadingBar(self.downloadCounter.value, totalCams)
-        
-        
+        self.progressCounter.increment()
+        self.LoadingBar(self.progressCounter.value, totalCams)
 
     def DownloadCustomURL(self):
         """Download a still frame from a user provided URL."""
@@ -360,7 +360,8 @@ class Insecrawl:
             self.logger.debug(
                 'START processing camera ID {}'.format(self.customURL))
             self.logger.debug('Image URL: {}'.format(self.customURL))
-            self.WriteImage(self.customIdentifier, self.customURL, self.downloadFolder)
+            self.WriteImage(self.customIdentifier,
+                            self.customURL, self.downloadFolder)
             self.logger.debug(
                 'DONE processing camera ID {}'.format(self.customURL))
 
@@ -391,7 +392,8 @@ class Insecrawl:
                         'START processing camera ID {}'.format(cameraID))
                     image_url = img.get('src')
                     self.logger.debug('Image URL: {}'.format(image_url))
-                    self.WriteImage(cameraName, image_url, self.downloadFolder)
+                    self.WriteImage(cameraName, image_url,
+                                    self.downloadFolder, 1)
                     self.logger.debug(
                         'DONE processing camera ID {}'.format(cameraID))
 
@@ -443,20 +445,29 @@ class Insecrawl:
                         'DONE processing img ID{}'.format(image_id))
                     continue
                 self.logger.debug('Image URL: {}'.format(image_url))
-                
+
                 if self.newCamerasOnly:
                     if not self.ImageExists(image_id):
-                        self.WriteImage(image_id, image_url, self.downloadFolder)
+                        p = multiprocessing.Process(target=self.WriteImage, args=(
+                            image_id, image_url, self.downloadFolder, totalCams))
+                    else:
+                        self.LoadingBar(self.progressCounter.value, totalCams)
                 elif not self.newCamerasOnly:
                     # Process image scrapes in batches of six. (Number of cameras per wep page.)
-                    p = multiprocessing.Process(target=self.WriteImage, args=(image_id, image_url, self.downloadFolder, totalCams))
-                    self.progressCounter += 1
-                    jobs.append(p)
+                    p = multiprocessing.Process(target=self.WriteImage, args=(
+                        image_id, image_url, self.downloadFolder, totalCams))
+                    # self.progressCounter.increment()
                     p.daemon = True
                     p.start()
                 self.logger.debug(
                     'DONE processing camera ID {}'.format(image_id))
-            p.join()
+            try:
+                p.join()
+            except UnboundLocalError:
+                pass
+            except AssertionError:
+                pass
+
         except urllib.error.HTTPError:
             self.logger.error('Country not found!')
 
@@ -468,7 +479,7 @@ class Insecrawl:
             totalCamsOfCountry = self.amountOfCameras
         self.maxPages = self.GetMaxPageNum()
         self.logger.info(
-            'Scraping images from cameras in {}, a total of {} cameras.'.format(countryName, totalCamsOfCountry))
+            'Scraping images from cameras in {}.'.format(countryName))
         if self.sortByCountry:
             self.downloadFolder = "images/{}".format(countryName)
         self.CreateDir(self.downloadFolder)
@@ -480,24 +491,25 @@ class Insecrawl:
         self.logger.info(
             'Done scraping cameras in {}.'.format(countryName))
         self.logger.info('Images downloaded: {}'.format(
-            self.successfulScrapes))
-        self.successfulScrapes = 0
+            self.successfulScrapes.value))
+        # self.successfulScrapes = 0
 
-        if self.skippedImages > 0:
+        if self.skippedImages.value > 0:
             self.logger.info(
-                "Skipped cameras: {}".format(self.skippedImages))
-            self.skippedImages = 0
-        if self.erroredScrapes > 0:
+                "Skipped cameras: {}".format(self.skippedImages.value))
+            self.skippedImages.reset()
+        if self.erroredScrapes.value > 0:
             self.logger.info(
-                'Failed scrapes: {}'.format(self.erroredScrapes))
-            self.erroredScrapes = 0
+                'Failed scrapes: {}'.format(self.erroredScrapes.value))
+            self.erroredScrapes.reset()
 
     def ImageExists(self, id):
         for name in glob.glob('{}/{}*'.format(self.downloadFolder, id)):
             if id in name:
-                self.logger.debug("Image from ID {} found on disk. Skipping".format(id))
-                self.progressCounter += 1
-                self.skippedImages += 1
+                self.logger.debug(
+                    "Image from ID {} found on disk. Skipping".format(id))
+                self.progressCounter.increment()
+                self.skippedImages.increment()
                 return True
             else:
                 return False
