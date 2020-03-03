@@ -34,9 +34,12 @@ $ python3 insecrawl.py -l
 $ python3 insecrawl.py -t -S -c FI
 ```
 
-**-t** => Add a timestamp to the image filaname. Prevents overwriting previous scrapes.  
-**-S** => Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland**  
-**-c FI** => Scrape cameras from FI
+|       |                                                                                                            |
+| :---- | :--------------------------------------------------------------------------------------------------------- |
+| -t    | Add a timestamp to the image filaname. Prevents overwriting previous scrapes.                              |
+| -S    | Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland** |
+| -c FI | Scrape cameras from FI                                                                                     |
+|       |                                                                                                            |
 
 ---
 
