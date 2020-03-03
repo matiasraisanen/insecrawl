@@ -20,13 +20,23 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 ## How to use
 
-Run the program simply like so
+There are several ways to use this program, but the suggested use is as follows:
+
+**1. List countries**
 
 ```
-$ python3 insecrawl.py -c {COUNTRY_CODE}
+$ python3 insecrawl.py -l
 ```
 
-This will download a still frame from each camera located in the designated country, and save them into **./images**
+**2. Pick a country code from the list, and scrape its cameras**
+
+```
+$ python3 insecrawl.py -t -S -c FI
+```
+
+**-t** => Add a timestamp to the image filaname. Prevents overwriting previous scrapes.  
+**-S** => Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland**  
+**-c FI** => Scrape cameras from FI
 
 ---
 
@@ -42,17 +52,8 @@ $ python3 insecrawl.py --listCountries
 ---
 
 **Example-2:**  
-Scrape images from every camera located in Finland. Save images into **./images/Finland**
-
-```
-$ python3 insecrawl.py -c FI -f Finland
-```
-
----
-
-**Example-3:**  
 Scrape images from every camera listed on insecam, and save them in **./images/{COUNTRY_NAME}**  
-This can take hours to complete, however.
+This can take a couple of hours to finish.
 
 ```
 $ python3 insecrawl.py --scrapeAllCameras --sortByCountry
@@ -60,7 +61,7 @@ $ python3 insecrawl.py --scrapeAllCameras --sortByCountry
 
 ---
 
-**Example-4:**  
+**Example-3:**  
 You can also combine terminal commands to your liking.
 
 Scrape camera ID 241666 every 900 seconds.
