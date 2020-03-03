@@ -22,7 +22,7 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 There are several ways to use this program, but the suggested use is as follows:
 
-**1. List countries**
+**1. List cameras by country**
 
 ```
 $ python3 insecrawl.py -l
@@ -39,6 +39,8 @@ $ python3 insecrawl.py -t -S -c FI
 | -t    | Add a timestamp to the image filename. Prevents overwriting previous scrapes.                              |
 | -S    | Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland** |
 | -c FI | Scrape cameras from FI                                                                                     |
+
+**3. Browse ./images/Finland to see the scraped images**
 
 ---
 
