@@ -20,9 +20,9 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 ## How to use
 
-There are several ways to use this program, but the suggested use is as follows:
+There are several ways to use this program, but the suggested flow is as follows:
 
-**1. List cameras by country**
+**1. Print a list of all countries that have cameras**
 
 ```
 $ python3 insecrawl.py -l
@@ -30,19 +30,19 @@ $ python3 insecrawl.py -l
 
 **2. Pick a country code from the list, and scrape its cameras**
 
-We will use Finland as an example.
+Here we use Finland as an example.
 
 ```
 $ python3 insecrawl.py -t -S -c FI
 ```
 
-| Flag  | Explanation                                                                                                |
-| :---- | :--------------------------------------------------------------------------------------------------------- |
-| -t    | Add a timestamp to the image filename. Prevents overwriting previous scrapes.                              |
-| -S    | Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland** |
-| -c FI | Scrape cameras from FI                                                                                     |
+| Option | Explanation                                                                                                |
+| :----- | :--------------------------------------------------------------------------------------------------------- |
+| -t     | Add a timestamp to the image filename. Prevents overwriting previous scrapes.                              |
+| -S     | Automatically determine the filepath using the country code. e.g. FI will be saved in **./images/Finland** |
+| -c FI  | Scrape cameras from FI                                                                                     |
 
-**3. Browse ./images/Finland to see the scraped images**
+**3. Browse ./images/Finland to examine the scraped images**
 
 ```
 $ ls ./images/Finland
@@ -50,18 +50,9 @@ $ ls ./images/Finland
 
 ---
 
-## Examples
+## Other examples
 
 **Example-1:**  
-List all countries, their two-letter code and how many cameras they each have
-
-```
-$ python3 insecrawl.py --listCountries
-```
-
----
-
-**Example-2:**  
 Scrape images from every camera listed on insecam, and save them in **./images/{COUNTRY_NAME}**  
 This can take a couple of hours to finish.
 
@@ -71,7 +62,7 @@ $ python3 insecrawl.py --scrapeAllCameras --sortByCountry
 
 ---
 
-**Example-3:**  
+**Example-2:**  
 You can also combine terminal commands to your liking.
 
 Scrape camera ID 241666 every 900 seconds.
