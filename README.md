@@ -30,6 +30,8 @@ $ python3 insecrawl.py -l
 
 **2. Pick a country code from the list, and scrape its cameras**
 
+We will use Finland as an example.
+
 ```
 $ python3 insecrawl.py -t -S -c FI
 ```
@@ -41,6 +43,10 @@ $ python3 insecrawl.py -t -S -c FI
 | -c FI | Scrape cameras from FI                                                                                     |
 
 **3. Browse ./images/Finland to see the scraped images**
+
+```
+$ ls ./images/Finland
+```
 
 ---
 
