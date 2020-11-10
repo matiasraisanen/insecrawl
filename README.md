@@ -20,8 +20,13 @@ i.e. the ID of https://www.insecam.org/en/view/241666/ is **241666**
 
 ## How to use
 
-There are several ways to use this program, but the suggested flow is as follows:
+You can use the program as you like, but the typical flow is as follows:
 
+**0. Install dependencies**
+
+```
+$ pip3 install opencv-python beautifulsoup4 iso3166
+```
 **1. Print a list of all countries that have cameras**
 
 ```
