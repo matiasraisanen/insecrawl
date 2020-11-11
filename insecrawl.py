@@ -23,6 +23,7 @@ from Counter import Counter
 class Insecrawl:
 
     def __init__(self):
+        self.drawLogo()
         self.libc = ctypes.CDLL(None)
         self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
@@ -568,6 +569,22 @@ class Insecrawl:
                 self.country, self.countryName))
             self.ScrapePages(self.country, self.countryName)
         self.QuitProgram()
+
+    def drawLogo(self):
+        logo = [
+            "                                                                        ",
+            " ██╗███╗   ██╗███████╗███████╗ ██████╗██████╗  █████╗ ██╗    ██╗██╗     ",
+            " ██║████╗  ██║██╔════╝██╔════╝██╔════╝██╔══██╗██╔══██╗██║    ██║██║     ",
+            " ██║██╔██╗ ██║███████╗█████╗  ██║     ██████╔╝███████║██║ █╗ ██║██║     ",
+            " ██║██║╚██╗██║╚════██║██╔══╝  ██║     ██╔══██╗██╔══██║██║███╗██║██║     ",
+            " ██║██║ ╚████║███████║███████╗╚██████╗██║  ██║██║  ██║╚███╔███╔╝███████╗",
+            " ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚══════╝",
+            "                                                                        "
+        ]
+        # Logo created with http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=insecrawl
+
+        for x in logo:
+            print(x)
 
 
 if __name__ == '__main__':
