@@ -431,9 +431,16 @@ class Insecrawl:
             soup = BeautifulSoup(html, features="html.parser")
             images = soup.findAll('img')
             for img in images:
-                if img.get('id') is None:
+                if img.get('id') == None:
+                    self.logger.debug('Image has no id, skip')
+                    continue
+                if img.get('title') == "LiveInternet":
+                    self.logger.debug('Ignore another website bloatware')
                     continue
                 match = re.search(r'image(\d+)', img.get('id'))
+                if match == None:
+                    self.logger.debug('No matches. Skipping')
+                    continue
                 image_id = match.group(1)
 
                 self.logger.debug('START processing {}'.format(image_id))
