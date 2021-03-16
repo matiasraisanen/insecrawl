@@ -431,6 +431,12 @@ class Insecrawl:
             soup = BeautifulSoup(html, features="html.parser")
             images = soup.findAll('img')
             for img in images:
+                image_url = img.get('src')
+                if "yandex" in image_url:
+                    self.logger.debug('Not a valid IP camera URL. Skipping...')
+                    self.logger.debug(
+                        'DONE processing img ID{}'.format(image_id))
+                    continue
                 if img.get('id') == None:
                     self.logger.debug('Image has no id, skip')
                     continue
@@ -444,12 +450,6 @@ class Insecrawl:
                 image_id = match.group(1)
 
                 self.logger.debug('START processing {}'.format(image_id))
-                image_url = img.get('src')
-                if "yandex" in image_url:
-                    self.logger.debug('Not a valid IP camera URL. Skipping...')
-                    self.logger.debug(
-                        'DONE processing img ID{}'.format(image_id))
-                    continue
                 self.logger.debug('Image URL: {}'.format(image_url))
 
                 if self.newCamerasOnly:
