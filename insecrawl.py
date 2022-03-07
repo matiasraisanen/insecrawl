@@ -8,6 +8,7 @@ import json
 import logging
 import multiprocessing
 import os
+import platform
 import re
 import sys
 import tempfile
@@ -24,8 +25,10 @@ class Insecrawl:
 
     def __init__(self):
         self.drawLogo()
-        self.libc = ctypes.CDLL(None)
-        self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
+        operating_system = platform.system()
+        if operating_system != 'Windows':
+            self.libc = ctypes.CDLL(None)
+            self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
         # Logger setup
         logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
@@ -123,10 +126,13 @@ class Insecrawl:
         if not self.verboseLogging:
             # Wrap main function in stderr_redirector to suppress those pesky ffmpeg errors.
             # Downside: stderr will not be visible on screen.
-            f = io.StringIO()
-            with self.stderr_redirector(f):
+            if operating_system != 'Windows':
+                f = io.StringIO()
+                with self.stderr_redirector(f):
+                    self.main()
+                f.close
+            else:
                 self.main()
-            f.close
         elif self.verboseLogging:
             self.logger.removeHandler(self.handler)
             self.main()
