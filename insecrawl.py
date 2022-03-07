@@ -157,7 +157,8 @@ class Insecrawl:
     def GetCountriesJSON(self):
         """Fetch a JSON of country codes, countries and camera count"""
         try:
-            url = 'https://www.insecam.org/en/jsoncountries/'
+            # Insecam seems to have dropped HTTPS protocol in favor of HTTP
+            url = 'http://www.insecam.org/en/jsoncountries/'
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
             req = Request(url=url, headers=headers)
