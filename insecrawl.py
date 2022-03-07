@@ -227,7 +227,7 @@ class Insecrawl:
     def GetMaxPageNum(self):
         """Returns maximum number of camera pages for a certain country."""
         try:
-            url = 'https://www.insecam.org/en/bycountry/{}/'.format(
+            url = 'http://www.insecam.org/en/bycountry/{}/'.format(
                 self.country)
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
@@ -249,7 +249,7 @@ class Insecrawl:
 
     def GetDetails(self):
         """Get details for a camera"""
-        url = 'https://www.insecam.org/en/view/{}/'.format(
+        url = 'http://www.insecam.org/en/view/{}/'.format(
             self.cameraDetails['id'])
         self.cameraDetails['insecamURL'] = url
         headers = {
@@ -370,7 +370,7 @@ class Insecrawl:
 
     def ScrapeOne(self, cameraID):
         """Scrape image from one camera"""
-        url = 'https://www.insecam.org/en/view/{}/'.format(
+        url = 'http://www.insecam.org/en/view/{}/'.format(
             cameraID)
         self.cameraDetails['insecamURL'] = url
         self.CreateDir(self.downloadFolder)
@@ -422,7 +422,7 @@ class Insecrawl:
 
     def ScrapeImages(self, page, totalCams):
         """Save still images from a certain country and page number."""
-        url = 'https://www.insecam.org/en/bycountry/{}/?page={}'.format(
+        url = 'http://www.insecam.org/en/bycountry/{}/?page={}'.format(
             self.country, page)
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
