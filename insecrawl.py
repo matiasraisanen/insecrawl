@@ -58,6 +58,7 @@ class Insecrawl:
         self.skippedImages = Counter()
         self.scrapeAllCams = False
         self.sortByCountry = False
+        self.sortByCamera = False
         self.startTime = datetime.now()
         self.successfulScrapes = Counter()
         self.timeStamp = False
@@ -66,7 +67,7 @@ class Insecrawl:
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
         gnuOptions = ["verbose", "help",
-                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "newCamsOnly"]
+                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly"]
 
         try:
             arguments, _ = getopt.getopt(
@@ -103,6 +104,8 @@ class Insecrawl:
                 self.scrapeAllCams = True
             elif currentArgument in ("-S", "--sortByCountry"):
                 self.sortByCountry = True
+            elif currentArgument in ("-s", "--sortByCamera"):
+                self.sortByCamera = True
             elif currentArgument in ("-n", "--newCamsOnly"):
                 self.newCamerasOnly = True
         if len(arguments) == 0:
@@ -341,11 +344,15 @@ class Insecrawl:
             timestampStr = ""
             if self.timeStamp:
                 dateTimeObj = datetime.now()
-                timestampStr = dateTimeObj.strftime("-[%Y-%m-%d]-[%H:%M:%S]")
-            cv2.imwrite('{}/{}{}.jpg'.format(downloadFolder,
-                                             cameraID, timestampStr), image)
-            self.logger.debug(
-                'Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
+                timestampStr = dateTimeObj.strftime("_%Y-%m-%d_%H-%M-%S")
+            if self.sortByCamera:
+                self.CreateDir(f'{downloadFolder}/{cameraID}')
+                cv2.imwrite(f'{downloadFolder}/{cameraID}/{cameraID}{timestampStr}.jpg', image)
+                self.logger.debug(f'Image saved to {downloadFolder}/{cameraID}/{cameraID}{timestampStr}.jpg')
+            else:
+                cv2.imwrite('{}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr), image)
+                self.logger.debug('Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
+
             self.logger.info(
                 'Scraped image from camera ID {}'.format(cameraID))
         if not success:
