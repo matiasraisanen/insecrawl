@@ -344,13 +344,13 @@ class Insecrawl:
             timestampStr = ""
             if self.timeStamp:
                 dateTimeObj = datetime.now()
-                timestampStr = dateTimeObj.strftime("_%Y-%m-%d_%H-%M-%S")
+                timestampStr = dateTimeObj.strftime("[%Y-%m-%d]_[%H-%M-%S]")
             if self.sortByCamera:
                 self.CreateDir(f'{downloadFolder}/{cameraID}')
-                cv2.imwrite(f'{downloadFolder}/{cameraID}/{cameraID}{timestampStr}.jpg', image)
-                self.logger.debug(f'Image saved to {downloadFolder}/{cameraID}/{cameraID}{timestampStr}.jpg')
+                cv2.imwrite(f'{downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg', image)
+                self.logger.debug(f'Image saved to {downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg')
             else:
-                cv2.imwrite('{}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr), image)
+                cv2.imwrite(f'{downloadFolder}/[{cameraID}]_{timestampStr}.jpg', image)
                 self.logger.debug('Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
 
             self.logger.info(
