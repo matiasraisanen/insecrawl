@@ -598,7 +598,10 @@ class Insecrawl:
             if self.interval != 0:
                 while True:
                     self.logger.info(f'Waiting for {self.interval} seconds until next scrape')
-                    time.sleep(self.interval)
+                    for i in range(self.interval):
+                        timeleft = str((self.interval - i)).zfill(len(str(self.interval)))
+                        print(f'Next run in: {timeleft}', end="\r")
+                        time.sleep(1)
                     self.erroredScrapes.reset()
                     self.progressCounter.reset()
                     self.skippedImages.reset()
