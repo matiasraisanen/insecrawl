@@ -12,6 +12,7 @@ import platform
 import re
 import sys
 import tempfile
+import time
 import urllib
 from urllib.request import Request, urlopen
 import cv2
@@ -63,11 +64,12 @@ class Insecrawl:
         self.successfulScrapes = Counter()
         self.timeStamp = False
         self.verboseLogging = False
+        self.interval = 0
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
         gnuOptions = ["verbose", "help",
-                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly"]
+                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly", "interval="]
 
         try:
             arguments, _ = getopt.getopt(
@@ -108,6 +110,8 @@ class Insecrawl:
                 self.sortByCamera = True
             elif currentArgument in ("-n", "--newCamsOnly"):
                 self.newCamerasOnly = True
+            elif currentArgument in ("--interval"):
+                self.interval= int(currentValue)
         if len(arguments) == 0:
             print("No arguments given. Use -h for help.")
 
@@ -351,7 +355,7 @@ class Insecrawl:
                 self.logger.debug(f'Image saved to {downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg')
             else:
                 cv2.imwrite(f'{downloadFolder}/[{cameraID}]_{timestampStr}.jpg', image)
-                self.logger.debug('Image saved to {}/{}{}.jpg'.format(downloadFolder, cameraID, timestampStr))
+                self.logger.debug(f'Image saved to {downloadFolder}/[{cameraID}]_{timestampStr}.jpg')
 
             self.logger.info(
                 'Scraped image from camera ID {}'.format(cameraID))
@@ -589,6 +593,18 @@ class Insecrawl:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
             self.ScrapePages(self.country, self.countryName)
+            
+            # If we have a set interval, sleep it and repeat the scraping loop forever
+            if self.interval != 0:
+                while True:
+                    self.logger.info(f'Waiting for {self.interval} seconds until next scrape')
+                    time.sleep(self.interval)
+                    self.erroredScrapes.reset()
+                    self.progressCounter.reset()
+                    self.skippedImages.reset()
+                    self.successfulScrapes.reset()
+                    self.ScrapePages(self.country, self.countryName)
+
         self.QuitProgram()
 
     def drawLogo(self):

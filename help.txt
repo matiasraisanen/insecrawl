@@ -34,6 +34,12 @@ OPTIONS
 
 --sortByCamera      A new folder will be created for each camera.
 
+--interval          Used for running the script at set intervals. Provide an amount
+                    of seconds you wish to wait between each run. Works only in 
+                    conjuction with -c or --country. The interval starts to run after
+                    the last camera is scraped, so don't expect exact results with 
+                    this. Can be exited only with CTRL+C.
+
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
                     format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
