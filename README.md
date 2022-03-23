@@ -84,7 +84,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f 241666_timelapse -t"
 ```
 -h, --help          Print this help page
 
--c, --country       Designate a country, and scrape stills from all cameras in
+-c, --country       Designate a country, and scrape stills from all cameras in 
                     that country. Provide a two letter country code (ISO 3166-1 alpha-2)
 
 -l, --listCountries Prints all countries, country codes and camera amounts listed on
@@ -94,27 +94,35 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f 241666_timelapse -t"
 
 -f, --folder        Assign a custom download path under ./images folder.
 
--i, --identifier    Provide a custom identifier for the camera, used as
+-i, --identifier    Provide a custom identifier for the camera, used as 
                     filename for the saved image. Works only with -u and -o flags.
-
--n, --newCamsOnly   Scrape only the cameras that do not have a still saved on disk.
 
 -o, --oneCamera     Provide a single insecam camera ID to download a still frame from.
 
---scrapeAllCameras  Downloads a still from every camera listed on insecam. This can
+-n, --newCamsOnly   Scrape only the cameras that do not have a still saved on disk.
+
+--scrapeAllCameras  Downloads a still from every camera listed on insecam. This can 
                     take hours to complete. Best used together with --sortByCountry
 
 -S, --sortByCountry Images will be saved in ./images/{COUNTRY_NAME}
+
+--sortByCamera      A new folder will be created for each camera.
+
+--interval          Used for running the script at set intervals. Provide an amount
+                    of seconds you wish to wait between each run. Works only in 
+                    conjuction with -c or --country. The interval starts to run after
+                    the last camera is scraped, so don't expect exact results with 
+                    this. Can be exited only with CTRL+C.
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
                     format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
                     local time and a 24h clock.
 
--u, --url           Provide a direct URL to a video stream to download a still frame
-                    from. Useful if the camera is no longer on insecam, but still
-                    has a publicly accessible web interface. Must be used in conjuction
-                    with -i or --identifier.
+-u, --url           Provide a direct URL to a video stream to download a still frame 
+                    from. Useful if the camera is no longer on insecam, but still 
+                    has a publicly accessible web interface. Must be used in conjuction 
+                    with -i or --identifier. 
 
 -v, --verbose       Debug level logging
 ```
