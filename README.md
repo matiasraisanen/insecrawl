@@ -116,7 +116,7 @@ $ watch -n 900 "python3 insecrawl.py -o 241666 -f 241666_timelapse -t"
 
 -t, --timeStamp     Append timestamp to image filename. Useful if you don't
                     want to overwrite previously saved images. Timestamp
-                    format is [YYYY-MM-DD]-[HH:MM:SS], using computer's
+                    format is [YYYY-MM-DD]_[HH-MM-SS], using computer's
                     local time and a 24h clock.
 
 -u, --url           Provide a direct URL to a video stream to download a still frame 
