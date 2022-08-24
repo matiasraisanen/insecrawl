@@ -85,7 +85,7 @@ class Insecrawl:
             elif currentArgument in ("-h", "--help"):
                 self.PrintHelp()
             elif currentArgument in ("-c", "--country"):
-                self.country = currentValue
+                self.country = currentValue.upper()
             elif currentArgument in ("-l", "--listCountries"):
                 self.printAmount = True
             elif currentArgument in ("-d", "--details"):
