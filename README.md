@@ -25,7 +25,7 @@ You can use the program as you like, but the typical flow is as follows:
 **0. Install dependencies**
 
 ```
-$ pip3 install opencv-python beautifulsoup4 iso3166
+$ pip3 install opencv-python opencv-contrib-python-headless beautifulsoup4 iso3166
 ```
 **1. Print a list of all countries that have cameras**
 
@@ -50,7 +50,7 @@ $ python3 insecrawl.py -t -S -c FI
 **3. Browse ./images/Finland to examine the scraped images**
 
 ```
-$ ls ./images/Finland
+$ browse ./images/Finland
 ```
 
 ---
