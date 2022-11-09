@@ -1,6 +1,6 @@
 # Insecrawl
 
-![Python3.7](https://img.shields.io/badge/python-3.7-green)
+![Python3.7](https://img.shields.io/badge/python-3.10-green)
 
 Insecrawl is a crawler for [insecam.org](https://www.insecam.org/). Its purpose is to download still frames from cameras listed on said website.
 
