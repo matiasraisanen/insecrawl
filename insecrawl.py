@@ -19,7 +19,8 @@ import cv2
 from bs4 import BeautifulSoup
 from iso3166 import countries
 
-from Counter import Counter
+from utils.Counter import Counter
+from utils.CustomFormatter import CustomFormatter
 
 
 class Insecrawl:
@@ -32,14 +33,13 @@ class Insecrawl:
             self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
         # Logger setup
-        logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
-                            datefmt='%H:%M:%S', level=logging.DEBUG)
+        # logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
+        #                     datefmt='%H:%M:%S', level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
         self.handler = logging.StreamHandler(sys.stdout)
         self.handler.setLevel(logging.INFO)
-        formatter = logging.Formatter(
-            '[%(asctime)s]-[%(levelname)s]: %(message)s', datefmt='%H:%M:%S')
-        self.handler.setFormatter(formatter)
+        # formatter = logging.Formatter(CustomFormatter())
+        self.handler.setFormatter(CustomFormatter())
         self.logger.addHandler(self.handler)
         # Logger setup finished
 
@@ -361,7 +361,7 @@ class Insecrawl:
                 'Scraped image from camera ID {}'.format(cameraID))
         if not success:
             self.erroredScrapes.increment()
-            self.logger.error("Failed to scrape camera ID {}".format(cameraID))
+            self.logger.warning("Failed to scrape camera ID {}".format(cameraID))
         self.progressCounter.increment()
         self.LoadingBar(self.progressCounter.value, totalCams)
 
