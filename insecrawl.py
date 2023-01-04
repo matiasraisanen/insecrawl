@@ -25,7 +25,7 @@ from utils.CustomFormatter import CustomFormatter
 
 class Insecrawl:
 
-    def __init__(self):
+    def __init__(self, logLevel=logging.INFO):
         self.drawLogo()
         operating_system = platform.system()
         if operating_system != 'Windows':
@@ -33,18 +33,14 @@ class Insecrawl:
             self.c_stderr = ctypes.c_void_p.in_dll(self.libc, 'stderr')
 
         # Logger setup
-        # logging.basicConfig(format='[%(asctime)s]-[%(levelname)s]: %(message)s',
-        #                     datefmt='%H:%M:%S', level=logging.DEBUG)
+        logging.basicConfig(level=logLevel)
         self.logger = logging.getLogger(__name__)
         self.handler = logging.StreamHandler(sys.stdout)
-        self.handler.setLevel(logging.INFO)
-        # formatter = logging.Formatter(CustomFormatter())
         self.handler.setFormatter(CustomFormatter())
         self.logger.addHandler(self.handler)
         # Logger setup finished
 
-        self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
-                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
+        self.cameraDetails = {'id': False, 'country': False, 'countryCode': False, 'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
         self.countriesJSON = False
         self.country = False
         self.customIdentifier = False
@@ -68,8 +64,7 @@ class Insecrawl:
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
-        gnuOptions = ["verbose", "help",
-                      "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly", "interval="]
+        gnuOptions = ["verbose", "help", "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly", "interval="]
 
         try:
             arguments, _ = getopt.getopt(
