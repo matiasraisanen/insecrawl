@@ -40,7 +40,8 @@ class Insecrawl:
         self.logger.addHandler(self.handler)
         # Logger setup finished
 
-        self.cameraDetails = {'id': False, 'country': False, 'countryCode': False, 'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
+        self.cameraDetails = {'id': False, 'country': False, 'countryCode': False,
+                              'manufacturer': False, 'ip': False, 'tags': [], 'insecamURL': False, 'directURL': False}
         self.countriesJSON = False
         self.country = False
         self.customIdentifier = False
@@ -64,7 +65,8 @@ class Insecrawl:
         fullCmdArguments = sys.argv
         argumentList = fullCmdArguments[1:]
         unixOptions = "tvhc:ld:o:f:u:i:nS"
-        gnuOptions = ["verbose", "help", "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=", "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly", "interval="]
+        gnuOptions = ["verbose", "help", "country=", "listCountries", "details=", "oneCamera=", "timeStamp", "folder=",
+                      "url=", "identifier=", "scrapeAllCameras", "sortByCountry", "sortByCamera", "newCamsOnly", "interval="]
 
         try:
             arguments, _ = getopt.getopt(
@@ -106,7 +108,7 @@ class Insecrawl:
             elif currentArgument in ("-n", "--newCamsOnly"):
                 self.newCamerasOnly = True
             elif currentArgument in ("--interval"):
-                self.interval= int(currentValue)
+                self.interval = int(currentValue)
         if len(arguments) == 0:
             print("No arguments given. Use -h for help.")
 
@@ -346,17 +348,22 @@ class Insecrawl:
                 timestampStr = dateTimeObj.strftime("[%Y-%m-%d]_[%H-%M-%S]")
             if self.sortByCamera:
                 self.CreateDir(f'{downloadFolder}/{cameraID}')
-                cv2.imwrite(f'{downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg', image)
-                self.logger.debug(f'Image saved to {downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg')
+                cv2.imwrite(
+                    f'{downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg', image)
+                self.logger.debug(
+                    f'Image saved to {downloadFolder}/{cameraID}/[{cameraID}]_{timestampStr}.jpg')
             else:
-                cv2.imwrite(f'{downloadFolder}/[{cameraID}]_{timestampStr}.jpg', image)
-                self.logger.debug(f'Image saved to {downloadFolder}/[{cameraID}]_{timestampStr}.jpg')
+                cv2.imwrite(
+                    f'{downloadFolder}/[{cameraID}]_{timestampStr}.jpg', image)
+                self.logger.debug(
+                    f'Image saved to {downloadFolder}/[{cameraID}]_{timestampStr}.jpg')
 
             self.logger.info(
                 'Scraped image from camera ID {}'.format(cameraID))
         if not success:
             self.erroredScrapes.increment()
-            self.logger.warning("Failed to scrape camera ID {}".format(cameraID))
+            self.logger.warning(
+                "Failed to scrape camera ID {}".format(cameraID))
         self.progressCounter.increment()
         self.LoadingBar(self.progressCounter.value, totalCams)
 
@@ -588,13 +595,15 @@ class Insecrawl:
             self.logger.debug('Country code {} resolved to {}.'.format(
                 self.country, self.countryName))
             self.ScrapePages(self.country, self.countryName)
-            
+
             # If we have a set interval, sleep it and repeat the scraping loop forever
             if self.interval != 0:
                 while True:
-                    self.logger.info(f'Waiting for {self.interval} seconds until next scrape')
+                    self.logger.info(
+                        f'Waiting for {self.interval} seconds until next scrape')
                     for i in range(self.interval):
-                        timeleft = str((self.interval - i)).zfill(len(str(self.interval)))
+                        timeleft = str((self.interval - i)
+                                       ).zfill(len(str(self.interval)))
                         print(f'Next run in: {timeleft}', end="\r")
                         time.sleep(1)
                     self.erroredScrapes.reset()
